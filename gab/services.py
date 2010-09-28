@@ -1,8 +1,10 @@
 from fabric.api import sudo, run
 
+
 def __is_service(service):
     services = ('nginx', 'apache2', 'mysql', 'memcached', 'jetty')
     return service in services
+
 
 def start(service):
     'Start a service'
@@ -12,6 +14,7 @@ def start(service):
         sudo('service %s start' % service)
     else:
         sudo('start %s' % service)
+
 
 def stop(service):
     'Stop a service'
@@ -28,6 +31,7 @@ def stop(service):
     else:
         sudo('stop %s' % service)
 
+
 def restart(service):
     'Restart a service'
     if service == 'apache':
@@ -43,6 +47,7 @@ def restart(service):
     else:
         sudo('stop %s' % service)
         sudo('start %s' % service)
+
 
 def status(service):
     'Status of a service. Note that not all services support this.'

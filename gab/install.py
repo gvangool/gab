@@ -4,6 +4,7 @@ from fabric.contrib.files import exists, append
 from gab.maintenance import apt_update, install
 from gab.validators import validate_not_empty as _validate_not_empty
 
+
 def install_dotfiles(repo='http://github.com/gvangool/dotfiles.git'):
     '''
     Install the dotfiles from the given repository. If none is specified, use
@@ -16,13 +17,16 @@ def install_dotfiles(repo='http://github.com/gvangool/dotfiles.git'):
     run('git checkout .')
     run('rm -rfd src/dotfiles/')
 
+
 def install_default_packages():
     '''Install some default packages'''
     install('vim', 'screen', 'lynx', 'smbfs', 'tofrodos')
 
+
 def install_vcs():
     '''Install most used VCS (svn, git, hg) '''
     install('subversion', 'git-core', 'mercurial')
+
 
 def install_python(type=''):
     '''Install Python stuff'''
@@ -35,6 +39,7 @@ def install_python(type=''):
         install('libmysqlclient15-dev')
         # needed for PIL
         install('libfreetype6-dev', 'libjpeg-dev')
+
 
 def create_python_env(env_name='generic', requirements_file=None):
     '''
@@ -49,6 +54,7 @@ def create_python_env(env_name='generic', requirements_file=None):
     else:
         run('pip install -E %s -r %s' % (py_env, requirements_file))
 
+
 def install_ruby():
     install('ruby1.8', 'libbluecloth-ruby', 'libopenssl-ruby1.8', 'ruby1.8-dev', 'ri', 'rdoc', 'irb')
     sudo('ln -s /usr/bin/ruby1.8 /usr/bin/ruby')
@@ -61,6 +67,7 @@ def install_ruby():
             sudo('ruby setup.rb')
             sudo('ln -s /usr/bin/gem1.8 /usr/bin/gem')
 
+
 def install_duplicity(env_name='backup'):
     '''Install the duplicity backup tool (http://duplicity.nongnu.org/)'''
     py_env = '~/env/%s' % env_name
@@ -68,11 +75,12 @@ def install_duplicity(env_name='backup'):
     run('pip install -E %s boto' % py_env)
     run('pip install -E %s http://code.launchpad.net/duplicity/0.6-series/0.6.05/+download/duplicity-0.6.05.tar.gz' % py_env)
 
+
 def install_nginx(stable=True):
     '''Install nginx as a webserver or reverse proxy'''
     if not stable:
         version = '0.8.46'
-    install('nginx') # install it to get stable version and initial config
+    install('nginx')  # install it to get stable version and initial config
     if not stable:
         stop('nginx')
         run('mkdir -p src')
@@ -96,6 +104,7 @@ def install_nginx(stable=True):
                 sudo('make install')
         start('nginx')
 
+
 def install_apache2(type='python'):
     '''Install Apache2 as a application backend'''
     install('apache2')
@@ -112,18 +121,22 @@ def install_apache2(type='python'):
     # we want rid of the default apache config
     sudo('a2dissite default; /etc/init.d/apache2 restart', pty=True)
 
+
 def install_mysql():
     '''Install MySQL as database'''
     install_mysql_server()
     install_mysql_client()
 
+
 def install_mysql_server():
     '''Install MySQL server'''
     install('mysql-server-5.1')
 
+
 def install_mysql_client():
     '''Install MySQL client'''
     install('mysql-client-5.1')
+
 
 def install_apt_cacher(admin='root@localhost'):
     '''Install apt-cacher server'''
@@ -131,6 +144,7 @@ def install_apt_cacher(admin='root@localhost'):
     sudo('echo AUTOSTART=1 >> /etc/default/apt-cacher')
     sudo('echo \'EXTRAOPT=" admin_email=%s"\' >> /etc/default/apt-cacher' % admin)
     sudo('/etc/init.d/apt-cacher restart')
+
 
 def install_tmux():
     '''Get and install the latest tmux (1.3)'''
@@ -145,15 +159,18 @@ def install_tmux():
     run('mkdir -p bin')
     run('cp ~/src/tmux-1.3/tmux ~/bin/')
 
+
 def install_latex():
     '''Install LaTeX'''
     install('texlive', 'texlive-font*', 'texlive-latex*')
     if getattr(env, 'editor', 'vim') == 'vim':
         install('vim-latexsuite')
 
+
 def install_vlc():
     '''Install VLC media player'''
     install('vlc', 'mozilla-plugin-vlc', 'videolan-doc')
+
 
 def install_cdripper():
     '''
@@ -173,6 +190,7 @@ def install_cdripper():
             run('./configure --enable-lang-all --enable-gtk2 --enable-cli')
             sudo('make install')
 
+
 def install_dvdripper():
     '''Install k9copy as DVD ripper'''
     if not exists('/etc/apt/sources.list.d/medibuntu.list'):
@@ -183,9 +201,11 @@ def install_dvdripper():
     install('libdvdcss2')
     install('k9copy')
 
+
 def install_wine():
     '''Install wine'''
     install('wine')
+
 
 def install_moc(add_lastfm=True):
     '''
@@ -202,7 +222,7 @@ def install_moc(add_lastfm=True):
         username = prompt('Last.fm username?', validate=lambda v: _validate_not_empty(v, key='username'))
         password = prompt('Last.fm password?', validate=lambda v: _validate_not_empty(v, key='password'))
         # create lastfm config
-        append('[account]\nuser = %s\npassword = %s' % (username,password,), '/etc/lastfmsubmitd.conf', use_sudo=True)
+        append('[account]\nuser = %s\npassword = %s' % (username, password,), '/etc/lastfmsubmitd.conf', use_sudo=True)
         # add user to lastfm group so we can submit
         sudo('adduser %s lastfm' % env.user)
         # setup moc to submit to lastfm on song change (use script from
@@ -214,9 +234,11 @@ def install_moc(add_lastfm=True):
             run('chmod a+x moc_submit_lastfm')
             append('OnSongChange = "/home/%(user)s/.moc/moc_submit_lastfm --artist %%a --title %%t --length %%d --album %%r"' % env, 'config')
 
+
 def install_systools():
     'Install extra system tools for convenience (htop, iostat, ...)'
     install('htop', 'iotop', 'sysstat', 'nethogs')
+
 
 def install_memcached():
     'Install memcached server'
@@ -237,6 +259,7 @@ def install_memcached():
             sudo('cp -R scripts /usr/share/memcached')
     install_memcached_client()
 
+
 def install_memcached_client():
     'Install libmemcached as client library for memcached'
     install('libevent-dev', 'build-essential')
@@ -252,6 +275,7 @@ def install_memcached_client():
         append('/usr/local/lib/', '/etc/ld.so.conf.d/local_lib', use_sudo=True)
         sudo('ldconfig')
 
+
 def install_memcached_client_python():
     'Install pylibmc (and thus libmemcached) as client libraries for memcached'
     if not exists('/usr/local/lib/libmemcached.so'):
@@ -266,4 +290,3 @@ def install_memcached_client_python():
                 run('. %(virtual_env)s/bin/activate; python setup.py install --with-libmemcached=/usr/local/lib' % env)
             else:
                 sudo('python setup.py install --with-libmemcached=/usr/local/lib' % env)
-
