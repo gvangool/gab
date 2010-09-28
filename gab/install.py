@@ -48,8 +48,11 @@ def create_python_env(env_name='generic', requirements_file=None):
     '''
     py_env = '~/env/%s' % env_name
     if requirements_file is None:
-        run('pip install -E %s ipython suds pygments httplib2 textile markdown simplejson django' % py_env)
-        run('pip install -E %s http://effbot.org/downloads/Imaging-1.1.6.tar.gz' % py_env)
+        run('pip install -E %s ipython suds pygments httplib2 ' % py_env)
+        run('pip install -E %s simplejson textile markdown' % py_env)
+        run('pip install -E %s django bpython docutils' % py_env)
+        pil_url = 'http://effbot.org/downloads/Imaging-1.1.7.tar.gz'
+        run('pip install -E %s Imaging==1.1.7 -f %s' % (py_env, pil_url,))
         run('pip install -E %s MySQL-python' % py_env)
     else:
         run('pip install -E %s -r %s' % (py_env, requirements_file))
