@@ -1,3 +1,6 @@
+===
 GAB
-~~~
-A collection of [fabfile](http://fabfile.org) commands.
+===
+A collection of fabfile_ commands.
+
+.. _fabfile: http://fabfile.org
