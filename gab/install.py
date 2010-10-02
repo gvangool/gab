@@ -146,12 +146,9 @@ def install_mysql_client():
     install('mysql-client-5.1')
 
 
-def install_apt_cacher(admin='root@localhost'):
+def install_apt_cacher():
     '''Install apt-cacher server'''
-    install('apt-cacher')
-    sudo('echo AUTOSTART=1 >> /etc/default/apt-cacher')
-    sudo('echo \'EXTRAOPT=" admin_email=%s"\' >> /etc/default/apt-cacher' % admin)
-    sudo('/etc/init.d/apt-cacher restart')
+    install('apt-cacher-ng')
 
 
 def install_tmux():

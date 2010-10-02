@@ -40,9 +40,9 @@ def setup_database():
     install_mysql()
 
 
-def setup_apt_cacher(admin='root@localhost'):
-    update()
-    install_apt_cacher(admin)
+def setup_apt_cacher():
+    setup_base()
+    install_apt_cacher()
 
 
 def setup_rabbitmq(user, password, vhost):
