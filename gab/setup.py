@@ -18,7 +18,7 @@ def setup_desktop(type=''):
     setup_base()
     install_python(type)
     install_vlc()
-    install('unrar', 'nautilus-open-terminal', 'p7zip-full')
+    install('unrar', 'nautilus-open-terminal', 'p7zip-full', 'smbfs')
 
 
 def setup_developer_desktop():
