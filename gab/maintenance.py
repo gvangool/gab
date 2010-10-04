@@ -8,10 +8,15 @@ def _apt_get(cmd):
     return sudo('export DEBIAN_FRONTEND=noninteractive; apt-get %s' % cmd)
 
 
-def update():
-    '''Update all'''
+def update(dselect=False):
+    '''
+    Update everything.
+
+    It will update & upgrade all installed packages. And it will also try to
+    update extra repositories.
+    '''
     apt_update()
-    _upgrade()
+    apt_upgrade(dselect)
     vcs_update = {'git': 'git pull', 'hg': 'hg update', 'svn': 'svn up'}
     if exists('.git'):
         run(vcs_update['git'])
@@ -29,22 +34,34 @@ def update():
 
 
 def apt_update():
+    'Update apt repositories'
     _apt_get('update -q')
 
 
-def _upgrade():
+def apt_upgrade(dselect=False):
+    '''
+    Upgrade installed packages
+
+    ``dselect`` will trigger the ``apt-get dselect-upgrade`` behaviour.
+    '''
     _apt_get('upgrade -yq')
-    if not getattr(env, 'silent', True):
+    if dselect:
         # download only
-        _apt_get('dist-upgrade -d')
+        _apt_get('dselect-upgrade -d')
         # ask user whether he wants to run it
-        if prompt('Do you want to run "apt-get dist-upgrade"? ',
+        if not getattr(env, 'silent', True) and \
+           prompt('Do you want to run "apt-get dist-upgrade"? ',
                   default='y',
                   validate=_yes_or_no):
-            _apt_get('dist-upgrade -yqq')
+            _apt_get('dselect-upgrade -yqq')
 
 
 def install(*package_list, **options):
+    '''
+    Install packages
+
+    You can also pass extra options to apt-get (like allow_unauthenticated)
+    '''
     if len(package_list) == 0:
         return
 
