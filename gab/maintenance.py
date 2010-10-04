@@ -47,7 +47,7 @@ def apt_upgrade(dselect=False):
     _apt_get('upgrade -yq')
     if dselect:
         # download only
-        _apt_get('dselect-upgrade -d')
+        _apt_get('dselect-upgrade -yqd')
         # ask user whether he wants to run it
         if not getattr(env, 'silent', True) and \
            prompt('Do you want to run "apt-get dist-upgrade"? ',
