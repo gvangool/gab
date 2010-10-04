@@ -4,6 +4,10 @@ from fabric.contrib.files import exists
 from gab.validators import yes_or_no as _yes_or_no
 
 
+def _apt_get(cmd):
+    return sudo('export DEBIAN_FRONTEND=noninteractive; apt-get %s' % cmd)
+
+
 def update():
     '''Update all'''
     apt_update()
@@ -25,19 +29,19 @@ def update():
 
 
 def apt_update():
-    sudo('export DEBIAN_FRONTEND=noninteractive; apt-get update -q')
+    _apt_get('update -q')
 
 
 def _upgrade():
-    sudo('export DEBIAN_FRONTEND=noninteractive; apt-get upgrade -yq')
+    _apt_get('upgrade -yq')
     if not getattr(env, 'silent', True):
         # download only
-        sudo('export DEBIAN_FRONTEND=noninteractive; apt-get dist-upgrade -d')
+        _apt_get('dist-upgrade -d')
         # ask user whether he wants to run it
         if prompt('Do you want to run "apt-get dist-upgrade"? ',
                   default='y',
                   validate=_yes_or_no):
-            sudo('export DEBIAN_FRONTEND=noninteractive; apt-get dist-upgrade -yqq')
+            _apt_get('dist-upgrade -yqq')
 
 
 def install(*package_list, **options):
@@ -48,4 +52,4 @@ def install(*package_list, **options):
     if options.get('allow_unauthenticated', False):
         args += ' --allow-unauthenticated'
     package_list = ' '.join(package_list)
-    sudo('export DEBIAN_FRONTEND=noninteractive; apt-get install %s %s' % (args, package_list,))
+    _apt_get('install %s %s' % (args, package_list,))
