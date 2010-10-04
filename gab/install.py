@@ -2,6 +2,7 @@ from fabric.api import *
 from fabric.contrib.files import exists, append
 
 from gab.maintenance import apt_update, install
+from gab.services import restart
 from gab.validators import validate_not_empty as _validate_not_empty
 
 
@@ -111,7 +112,7 @@ def install_nginx(stable=True):
 
 def install_apache2(type='python'):
     '''Install Apache2 as a application backend'''
-    install('apache2')
+    install('apache2', 'libapache2-mod-rpaf')
     if type == 'python':
         install('libapache2-mod-wsgi')
     elif type == 'php5':
@@ -122,8 +123,11 @@ def install_apache2(type='python'):
         sudo('gem install passenger')
         sudo('passenger-install-apache2-module')
         sudo('a2enmod passenger')
+    # enable some extra modules
+    sudo('a2enmod expires')
     # we want rid of the default apache config
-    sudo('a2dissite default; /etc/init.d/apache2 restart', pty=True)
+    sudo('a2dissite default')
+    restart('apache2')
 
 
 def install_mysql():
