@@ -302,6 +302,19 @@ def install_memcached_client_python():
                 sudo('python setup.py install --with-libmemcached=/usr/local/lib' % env)
 
 
+def install_solr():
+    '''Install SOLR: http://lucene.apache.org/solr/'''
+    _install('solr-jetty', 'openjdk-6-jdk')
+    sed('/etc/default/jetty', 'NO_START=1', 'NO_START=0', use_sudo=True)
+    append('JETTY_HOST=0.0.0.0', '/etc/default/jetty', use_sudo=True)
+    # move configuration files to current users dir
+    run('mkdir -p etc/solr/conf')
+    for f in ('etc/solr/conf/schema.xml', 'etc/solr/conf/solrconfig.xml'):
+        run('cp /%(f)s ~/%(f)s' % {'f': f})
+        sudo('mv /%(f)s /%(f)s~' % {'f': f})
+        sudo('ln -s ~/%(f)s /%(f)s' % {'f': f})
+
+
 def install_rabbitmq(user, password, vhost):
     l = '/etc/apt/sources.list.d/rabbitmq.list'
     if not exists(l):
