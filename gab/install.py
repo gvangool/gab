@@ -54,7 +54,7 @@ def create_python_env(env_name='generic', requirements_file=None):
         run('pip install -E %s django bpython docutils' % py_env)
         pil_url = 'http://effbot.org/downloads/Imaging-1.1.7.tar.gz'
         run('pip install -E %s Imaging==1.1.7 -f %s' % (py_env, pil_url,))
-        run('pip install -E %s MySQL-python' % py_env)
+        run('pip install -E %s MySQL-python pep8 fabric' % py_env)
     else:
         run('pip install -E %s -r %s' % (py_env, requirements_file))
 
