@@ -3,7 +3,8 @@ from gab.install import (install_default_packages, install_vcs,
                          install_systools, install_python, install_vlc,
                          install_mysql, install_memcached,
                          install_memcached_client_python, install_apache2,
-                         install_mysql_client, install_apt_cacher,)
+                         install_mysql_client, install_apt_cacher,
+                         install_rabbitmq)
 
 
 def setup_base():
@@ -42,3 +43,8 @@ def setup_database():
 def setup_apt_cacher(admin='root@localhost'):
     update()
     install_apt_cacher(admin)
+
+
+def setup_rabbitmq(user, password, vhost):
+    update()
+    install_rabbitmq(user, password, vhost)

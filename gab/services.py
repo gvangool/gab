@@ -2,7 +2,8 @@ from fabric.api import sudo, run
 
 
 def __is_service(service):
-    services = ('nginx', 'apache2', 'mysql', 'memcached', 'jetty')
+    services = ('nginx', 'apache2', 'mysql', 'memcached', 'jetty',
+                'rabbitmq-server')
     return service in services
 
 

@@ -294,3 +294,33 @@ def install_memcached_client_python():
                 run('. %(virtual_env)s/bin/activate; python setup.py install --with-libmemcached=/usr/local/lib' % env)
             else:
                 sudo('python setup.py install --with-libmemcached=/usr/local/lib' % env)
+
+
+def install_rabbitmq(user, password, vhost):
+    l = '/etc/apt/sources.list.d/rabbitmq.list'
+    if not exists(l):
+        sudo('echo deb http://www.rabbitmq.com/debian/ testing main > %s' % l)
+        sudo('wget http://www.rabbitmq.com/rabbitmq-signing-key-public.asc -O - | apt-key add -')
+        apt_update()
+    install('rabbitmq-server')
+    # create user and make it the admin
+    sudo('rabbitmqctl add_user %s %s' % (user, password,))
+    sudo('rabbitmqctl set_admin %s' % user)
+    # create vhost
+    sudo('rabbitmqctl add_vhost %s' % vhost)
+    # add permissions for user to vhost
+    sudo('rabbitmqctl set_permissions -p %s %s \'.*\' \'.*\' \'.*\'' % (vhost, user,))
+    # delete guest user for safety
+    sudo('rabbitmqctl delete_user guest')
+    plugin_dir = '/usr/lib/rabbitmq/lib/rabbitmq_server-2.1.0/plugins'
+    plugin_files = (
+        'http://www.rabbitmq.com/releases/plugins/v2.1.0/mochiweb-2.1.0.ez',
+        'http://www.rabbitmq.com/releases/plugins/v2.1.0/webmachine-2.1.0.ez',
+        'http://www.rabbitmq.com/releases/plugins/v2.1.0/amqp_client-2.1.0.ez',
+        'http://www.rabbitmq.com/releases/plugins/v2.1.0/rabbitmq-mochiweb-2.1.0.ez',
+        'http://www.rabbitmq.com/releases/plugins/v2.1.0/rabbitmq-management-2.1.0.ez',
+    )
+    for file in plugin_files:
+        sudo('wget %s -P %s' % (file, plugin_dir,))
+    # restart rabbitmq to load plugin
+    restart('rabbitmq-server')
