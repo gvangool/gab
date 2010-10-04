@@ -59,7 +59,8 @@ def create_python_env(env_name='generic', requirements_file=None):
 
 
 def install_ruby():
-    install('ruby1.8', 'libbluecloth-ruby', 'libopenssl-ruby1.8', 'ruby1.8-dev', 'ri', 'rdoc', 'irb')
+    install('ruby1.8', 'libbluecloth-ruby', 'libopenssl-ruby1.8',
+            'ruby1.8-dev', 'ri', 'rdoc', 'irb')
     sudo('ln -s /usr/bin/ruby1.8 /usr/bin/ruby')
     # gem install
     run('mkdir -p src')

@@ -34,7 +34,9 @@ def _upgrade():
         # download only
         sudo('export DEBIAN_FRONTEND=noninteractive; apt-get dist-upgrade -d')
         # ask user whether he wants to run it
-        if prompt('Do you want to run "apt-get dist-upgrade"? ', default='y', validate=_yes_or_no):
+        if prompt('Do you want to run "apt-get dist-upgrade"? ',
+                  default='y',
+                  validate=_yes_or_no):
             sudo('export DEBIAN_FRONTEND=noninteractive; apt-get dist-upgrade -yqq')
 
 
