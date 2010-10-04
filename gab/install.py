@@ -15,7 +15,7 @@ def install_dotfiles(repo='http://github.com/gvangool/dotfiles.git'):
     run('mkdir -p src')
     run('git clone -nq %s src/dotfiles' % repo)
     run('mv src/dotfiles/.git ~')
-    run('git checkout .')
+    run('git reset --hard')
     run('rm -rfd src/dotfiles/')
 
 
