@@ -322,7 +322,7 @@ def install_rabbitmq(user, password, vhost):
         sudo('echo deb http://www.rabbitmq.com/debian/ testing main > %s' % l)
         sudo('wget http://www.rabbitmq.com/rabbitmq-signing-key-public.asc -O - | apt-key add -')
         apt_update()
-    install('rabbitmq-server')
+    install('rabbitmq-server', 'erlang-inets')
     # create user and make it the admin
     sudo('rabbitmqctl add_user %s %s' % (user, password,))
     sudo('rabbitmqctl set_admin %s' % user)
