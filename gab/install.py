@@ -1,5 +1,5 @@
 from fabric.api import *
-from fabric.contrib.files import exists, append
+from fabric.contrib.files import exists, append, sed
 
 from gab.maintenance import apt_update, install
 from gab.services import restart
@@ -305,7 +305,7 @@ def install_memcached_client_python():
 
 def install_solr():
     '''Install SOLR: http://lucene.apache.org/solr/'''
-    _install('solr-jetty', 'openjdk-6-jdk')
+    install('solr-jetty', 'openjdk-6-jdk')
     sed('/etc/default/jetty', 'NO_START=1', 'NO_START=0', use_sudo=True)
     append('JETTY_HOST=0.0.0.0', '/etc/default/jetty', use_sudo=True)
     # move configuration files to current users dir
