@@ -37,7 +37,7 @@ def create_user(username, password='password'):
     # create user
     sudo('useradd -U -m -s /bin/bash %s' % username)
     # set password
-    sudo('echo "%s:%s" | chpasswd' % (username,password))
+    sudo('echo "%s:%s" | chpasswd' % (username, password))
     # add to admin group (sudoers)
     sudo('adduser %s admin' % username)
     # add to adm group (administrators)
