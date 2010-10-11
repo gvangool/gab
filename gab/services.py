@@ -7,7 +7,7 @@ def __is_service(service):
     return service in services
 
 
-def start(service):
+def _start(service):
     'Start a service'
     if service == 'apache':
         service = 'apache2'
@@ -17,7 +17,15 @@ def start(service):
         sudo('start %s' % service)
 
 
-def stop(service):
+def start(*services):
+    '''
+    Start a service or a list of services
+    '''
+    for service in services:
+        _start(service)
+
+
+def _stop(service):
     'Stop a service'
     if service == 'apache':
         service = 'apache2'
@@ -33,7 +41,15 @@ def stop(service):
         sudo('stop %s' % service)
 
 
-def restart(service):
+def stop(*services):
+    '''
+    Stop a service or a list of services
+    '''
+    for service in services:
+        _stop(service)
+
+
+def _restart(service):
     'Restart a service'
     if service == 'apache':
         service = 'apache2'
@@ -50,7 +66,15 @@ def restart(service):
         sudo('start %s' % service)
 
 
-def status(service):
+def restart(*services):
+    '''
+    Restart a service or a list of services
+    '''
+    for service in services:
+        _restart(service)
+
+
+def _status(service):
     'Status of a service. Note that not all services support this.'
     if service == 'apache':
         service = 'apache2'
@@ -58,3 +82,12 @@ def status(service):
         sudo('service %s status' % service)
     else:
         sudo('status %s' % service)
+
+
+def status(*services):
+    '''
+    Status of a service or a list of services. Note that not all services
+    support this.
+    '''
+    for service in services:
+        _status(service)
