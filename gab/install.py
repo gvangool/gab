@@ -332,13 +332,16 @@ def install_rabbitmq(user, password, vhost):
     sudo('rabbitmqctl set_permissions -p %s %s \'.*\' \'.*\' \'.*\'' % (vhost, user,))
     # delete guest user for safety
     sudo('rabbitmqctl delete_user guest')
-    plugin_dir = '/usr/lib/rabbitmq/lib/rabbitmq_server-2.1.0/plugins'
+    install_rabbitmq_plugins()
+
+def install_rabbitmq_plugins():
+    plugin_dir = '/usr/lib/rabbitmq/lib/rabbitmq_server-2.1.1/plugins'
     plugin_files = (
-        'http://www.rabbitmq.com/releases/plugins/v2.1.0/mochiweb-2.1.0.ez',
-        'http://www.rabbitmq.com/releases/plugins/v2.1.0/webmachine-2.1.0.ez',
-        'http://www.rabbitmq.com/releases/plugins/v2.1.0/amqp_client-2.1.0.ez',
-        'http://www.rabbitmq.com/releases/plugins/v2.1.0/rabbitmq-mochiweb-2.1.0.ez',
-        'http://www.rabbitmq.com/releases/plugins/v2.1.0/rabbitmq-management-2.1.0.ez',
+        'http://www.rabbitmq.com/releases/plugins/v2.1.1/mochiweb-2.1.1.ez',
+        'http://www.rabbitmq.com/releases/plugins/v2.1.1/webmachine-2.1.1.ez',
+        'http://www.rabbitmq.com/releases/plugins/v2.1.1/amqp_client-2.1.1.ez',
+        'http://www.rabbitmq.com/releases/plugins/v2.1.1/rabbitmq-mochiweb-2.1.1.ez',
+        'http://www.rabbitmq.com/releases/plugins/v2.1.1/rabbitmq-management-2.1.1.ez',
     )
     for file in plugin_files:
         sudo('wget %s -P %s' % (file, plugin_dir,))
