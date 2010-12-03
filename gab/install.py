@@ -2,7 +2,7 @@ from fabric.api import *
 from fabric.contrib.files import exists, append, sed
 
 from gab.maintenance import apt_update, install
-from gab.services import restart
+from gab.services import restart, start
 from gab.validators import validate_not_empty as _validate_not_empty
 
 
