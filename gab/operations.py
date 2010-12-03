@@ -26,7 +26,7 @@ def set_apt_proxy(host):
     sudo('echo Acquire::http::Proxy "%s";  > /etc/apt/apt.conf.d/01proxy' % host)
 
 
-def create_user(username, password='password'):
+def create_user(username, password='password', is_admin=True):
     '''
     Create a new user.
 
@@ -39,10 +39,11 @@ def create_user(username, password='password'):
     sudo('useradd -U -m -s /bin/bash %s' % username)
     # set password
     sudo('echo "%s:%s" | chpasswd' % (username, password))
-    # add to admin group (sudoers)
-    sudo('adduser %s admin' % username)
-    # add to adm group (administrators)
-    sudo('adduser %s adm' % username)
+    if is_admin:
+        # add to admin group (sudoers)
+        sudo('adduser %s admin' % username)
+        # add to adm group (administrators)
+        sudo('adduser %s adm' % username)
 
 
 def delete_user(username):
