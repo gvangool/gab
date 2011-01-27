@@ -2,7 +2,7 @@ from fabric.api import *
 from fabric.contrib.files import exists, append, sed
 
 from gab.maintenance import apt_update, install
-from gab.services import restart, start
+from gab.services import restart, start, stop
 from gab.validators import validate_not_empty as _validate_not_empty
 
 
@@ -84,7 +84,7 @@ def install_duplicity(env_name='backup'):
 def install_nginx(stable=True):
     '''Install nginx as a webserver or reverse proxy'''
     if not stable:
-        version = '0.8.46'
+        version = '0.8.54' # although this is stable at the moment
     install('nginx')  # install it to get stable version and initial config
     if not stable:
         stop('nginx')
