@@ -152,17 +152,19 @@ def install_apt_cacher():
 
 
 def install_tmux():
-    '''Get and install the latest tmux (1.3)'''
+    '''Get and install the latest tmux (1.4)'''
     install('build-essential', 'libevent-dev', 'ncurses-dev')
     run('mkdir -p src')
     with cd('src'):
-        run('wget http://downloads.sourceforge.net/project/tmux/tmux/tmux-1.3/tmux-1.3.tar.gz?use_mirror=heanet')
-        run('tar xf tmux-1.3.tar.gz')
-        with cd('tmux-1.3'):
+        run('wget http://downloads.sourceforge.net/project/tmux/tmux/tmux-1.4/tmux-1.4.tar.gz?use_mirror=heanet -O tmux-1.4.tar.gz')
+        run('tar xf tmux-1.4.tar.gz')
+        with cd('tmux-1.4'):
             run('./configure')
             run('make')
     run('mkdir -p bin')
-    run('cp ~/src/tmux-1.3/tmux ~/bin/')
+    run('mkdir -p share/man/man1/')
+    run('cp ~/src/tmux-1.4/tmux ~/bin/')
+    run('cp ~/src/tmux-1.4/tmux.1 ~/share/man/man1/')
 
 
 def install_latex():
