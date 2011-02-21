@@ -319,6 +319,7 @@ def install_solr():
 
 
 def install_rabbitmq(user, password, vhost):
+    '''Install the RabbitMQ server and add the web management plugin'''
     l = '/etc/apt/sources.list.d/rabbitmq.list'
     if not exists(l):
         sudo('echo deb http://www.rabbitmq.com/debian/ testing main > %s' % l)
