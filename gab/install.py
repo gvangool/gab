@@ -32,7 +32,7 @@ def install_vcs():
 def install_python(type=''):
     '''Install Python stuff'''
     install('python', 'python-setuptools', 'python-dev', 'build-essential')
-    sudo('easyinstall pip')
+    sudo('easy_install pip')
     sudo('pip install virtualenv virtualenvwrapper')
     if type == 'dev':
         # extra's to build certain python packages
