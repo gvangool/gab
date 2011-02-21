@@ -66,3 +66,15 @@ def install_crontab(path):
 def remove_crontab():
     '''Remove the cron file'''
     run('crontab -r')
+
+
+def install_nginx_config(path, site_name, id='00'):
+    '''Install nginx config'''
+    from gab.services import restart
+    if not exists(path):
+        return
+
+    sudo('ln -s %s /etc/nginx/sites-available/%s' % (path, site_name,))
+    sudo('''ln -s /etc/nginx/sites-available/%(site_name)s \
+            /etc/nginx/sites-enabled/%(id)s_%(site_name)s''' % locals())
+    restart('nginx')
