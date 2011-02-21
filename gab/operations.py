@@ -53,3 +53,16 @@ def delete_user(username):
         sudo('delgroup --only-if-empty %s' % username)
     except:
         pass
+
+
+def install_crontab(path):
+    '''Install the cron file'''
+    if not exists(path):
+        return
+
+    run('crontab %s' % (path,))
+
+
+def remove_crontab():
+    '''Remove the cron file'''
+    run('crontab -r')
