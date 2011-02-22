@@ -1,5 +1,5 @@
 from fabric.api import sudo, run
-from fabric.contrib.files import append
+from fabric.contrib.files import append, exists
 
 
 def shell(cmd):
