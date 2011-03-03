@@ -23,7 +23,9 @@ def set_apt_proxy(host):
 
     ``host`` should be something like http://localhost:3142
     '''
-    sudo('echo Acquire::http::Proxy "%s";  > /etc/apt/apt.conf.d/01proxy' % host)
+    sudo('echo Acquire::http::Proxy "%s";  > /etc/apt/apt.conf.d/01proxy' %
+         (host,)
+    )
 
 
 def create_user(username, password='password', is_admin=True):

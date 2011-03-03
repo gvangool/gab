@@ -337,6 +337,7 @@ def install_rabbitmq(user, password, vhost):
     sudo('rabbitmqctl delete_user guest')
     install_rabbitmq_plugins()
 
+
 def install_rabbitmq_plugins():
     plugin_dir = '/usr/lib/rabbitmq/lib/rabbitmq_server-2.1.1/plugins'
     plugin_files = (
