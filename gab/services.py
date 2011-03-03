@@ -1,19 +1,56 @@
 from fabric.api import sudo, run
 
+# current format:
+# - key -> dict:
+#   - type: the service type: upstart or service
+#   - restart: support restart? Or a string with the restart command
+#   - name: alias for the service (example apache -> apache2)
+# - key -> type (shortcut for dict[type])
 
-def __is_service(service):
-    services = ('nginx', 'apache2', 'mysql', 'memcached', 'jetty',
-                'rabbitmq-server')
-    return service in services
+service_information = {'__default__': {'type': 'upstart',
+                                       'restart': False,},}
+
+
+def add_service_information(name, value):
+    if not isinstance(value, dict):
+        value = {'type': value}
+    service_information[name] = value
+
+
+def _name(service):
+    info = service_information.get(service, '')
+    if 'name' in info:
+        return info['name']
+    return service
+
+
+def _supports_restart(service):
+    default = service_information['__default__']
+    info = service_information.get(service, default)
+    if 'restart' in info:
+        return info['restart']
+    elif 'type' in info:
+        return info['type'] != 'upstart'
+    elif 'name' in info:
+        return _supports_restart(info['name'])
+
+
+def _service_type(service):
+    default = service_information['__default__']
+    info = service_information.get(service, default)
+    if 'type' in info:
+        return info['type']
+    elif 'name' in info:
+        return _service_type(info['name'])
 
 
 def _start(service):
     'Start a service'
-    if service == 'apache':
-        service = 'apache2'
-    if __is_service(service):
+    service = _name(service)
+    st = _service_type(service)
+    if st == 'service':
         sudo('service %s start' % service)
-    else:
+    elif st == 'upstart':
         sudo('start %s' % service)
 
 
@@ -27,9 +64,9 @@ def start(*services):
 
 def _stop(service):
     'Stop a service'
-    if service == 'apache':
-        service = 'apache2'
-    if __is_service(service):
+    service = _name(service)
+    st = _service_type(service)
+    if st == 'service':
         sudo('service %s stop' % service)
         if service == 'mysql':
             # Due to a minor MySQL bug this may be necessary
@@ -37,7 +74,7 @@ def _stop(service):
                 sudo('killall mysqld_safe')
             except:
                 pass
-    else:
+    elif st == 'upstart':
         sudo('stop %s' % service)
 
 
@@ -51,19 +88,17 @@ def stop(*services):
 
 def _restart(service):
     'Restart a service'
-    if service == 'apache':
-        service = 'apache2'
+    service = _name(service)
+    st = _service_type(service)
+    restart = _supports_restart(service)
 
-    if service == 'jetty':
-        stop(service)
-        start(service)
-    #elif service == 'apache2':
-    #    sudo('/usr/sbin/apache2ctl graceful')
-    elif __is_service(service):
+    if isinstance(restart, str):
+        sudo(restart)
+    elif restart and st == 'service':
         sudo('service %s restart' % service)
     else:
-        sudo('stop %s' % service)
-        sudo('start %s' % service)
+        stop(service)
+        start(service)
 
 
 def restart(*services):
@@ -76,11 +111,11 @@ def restart(*services):
 
 def _status(service):
     'Status of a service. Note that not all services support this.'
-    if service == 'apache':
-        service = 'apache2'
-    if __is_service(service):
+    service = _name(service)
+    st = _service_type(service)
+    if st == 'service':
         sudo('service %s status' % service)
-    else:
+    elif st == 'upstart':
         sudo('status %s' % service)
 
 
@@ -91,3 +126,14 @@ def status(*services):
     '''
     for service in services:
         _status(service)
+
+
+# initialize the default service
+add_service_information('apache', {'name': 'apache2',})
+add_service_information('apache2', 'service')
+add_service_information('jetty', {'type': 'service', 'restart': False,})
+add_service_information('memcached', 'service')
+add_service_information('mysql', 'service')
+add_service_information('nginx', 'service')
+add_service_information('rabbitmq', {'name': 'rabbitmq-server',})
+add_service_information('rabbitmq-server', 'service')
