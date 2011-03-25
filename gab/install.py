@@ -300,7 +300,7 @@ def install_memcached_client_python():
         run('tar xf pylibmc-1.1.1.tar.gz')
         with cd('pylibmc-1.1.1'):
             if hasattr(env, 'virtual_env') and exists(env.virtual_env):
-                run('. %(virtual_env)s/bin/activate; python setup.py install --with-libmemcached=/usr/local/lib' % env)
+                run('%(virtual_env)s/bin/python setup.py install --with-libmemcached=/usr/local/lib' % env)
             else:
                 sudo('python setup.py install --with-libmemcached=/usr/local/lib' % env)
 
