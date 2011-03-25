@@ -42,7 +42,7 @@ def _update_config(line):
     '''
     Update the ServerDensity agent and restart it.
     '''
-    append(config, '/etc/sd-agent/config.cfg', use_sudo=True)
+    append(line, '/etc/sd-agent/config.cfg', use_sudo=True)
     restart('sd-agent')
 
 
