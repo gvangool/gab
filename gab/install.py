@@ -351,3 +351,14 @@ def install_rabbitmq_plugins():
         sudo('wget %s -P %s' % (file, plugin_dir,))
     # restart rabbitmq to load plugin
     restart('rabbitmq-server')
+
+
+def install_uwsgi():
+    '''
+    Install libraries required for uWSGI_ and install uWSGI_ in an test
+    virtualenv
+
+    .. _uWSGI: http://projects.unbit.it/uwsgi/
+    '''
+    install('libxml2-dev')
+    run('pip install -E ~/env/uwsgi_test uwsgi')
