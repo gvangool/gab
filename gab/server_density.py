@@ -5,7 +5,8 @@ from gab.maintenance import apt_update, install
 from gab.services import start, restart, add_service_information
 
 
-__all__ = ['install_serverdensity', 'sd_add_apache', 'sd_add_nginx_status',]
+__all__ = ['install_serverdensity', 'sd_add_apache', 'sd_add_nginx_status',
+           'sd_add_rabbitmq_config']
 
 
 def install_serverdensity(url, key):
@@ -69,6 +70,13 @@ def sd_add_nginx_status(status_url='http://127.0.0.1/nginx_status'):
         http://127.0.0.1/nginx_status
     '''
     _update_config('nginx_status_url: %s' % status_url)
+
+
+def sd_add_rabbitmq_config(http_api='http://127.0.0.1:55672/api/overview',
+                           user='guest', passwd='guest'):
+    _update_config('''rabbitmq_status_url: %(http_api)s
+rabbitmq_user: %(user)s
+rabbitmq_pass: %(passwd)s''' % locals())
 
 
 add_service_information('sd-agent', 'service')
