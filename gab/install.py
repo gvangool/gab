@@ -257,8 +257,10 @@ def install_memcached(daemon=False):
         with cd('src'):
             run('wget http://memcached.googlecode.com/files/memcached-1.4.5.tar.gz')
             run('tar xf memcached-1.4.5.tar.gz')
+            install('gcc-4.4')
             with cd('memcached-1.4.5'):
-                args = ['--prefix=', '--exec-prefix=/usr', '--datarootdir=/usr']
+                args = ['--prefix=', '--exec-prefix=/usr', '--datarootdir=/usr',
+                        'CC=gcc-4.4']
                 if getattr(env, 'is_64bit', False):
                     args.append('--enable-64bit')
                 run('./configure %s' % ' '.join(args))
