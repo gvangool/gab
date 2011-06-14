@@ -320,19 +320,17 @@ def install_solr():
 
 def install_rabbitmq(user, password, vhost):
     '''Install the RabbitMQ server and add the web management plugin'''
+    from gab.operations import create_rabbitmq_user, create_rabbitmq_vhost
     l = '/etc/apt/sources.list.d/rabbitmq.list'
     if not exists(l):
         sudo('echo deb http://www.rabbitmq.com/debian/ testing main > %s' % l)
         sudo('wget http://www.rabbitmq.com/rabbitmq-signing-key-public.asc -O - | apt-key add -')
         apt_update()
     install('rabbitmq-server', 'erlang-inets')
-    # create user and make it the admin
-    sudo('rabbitmqctl add_user %s %s' % (user, password,))
-    sudo('rabbitmqctl set_admin %s' % user)
-    # create vhost
-    sudo('rabbitmqctl add_vhost %s' % vhost)
-    # add permissions for user to vhost
-    sudo('rabbitmqctl set_permissions -p %s %s \'.*\' \'.*\' \'.*\'' % (vhost, user,))
+    # create the user & make it the admin
+    create_rabbitmq_user(user, password, admin=True)
+    # create the vhost
+    create_rabbitmq_vhost(vhost, user)
     # delete guest user for safety
     sudo('rabbitmqctl delete_user guest')
     install_rabbitmq_plugins()

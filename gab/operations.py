@@ -80,3 +80,32 @@ def install_nginx_config(path, site_name, id='00'):
     sudo('''ln -s /etc/nginx/sites-available/%(site_name)s \
             /etc/nginx/sites-enabled/%(id)s_%(site_name)s''' % locals())
     restart('nginx')
+
+
+def create_rabbitmq_user(user, password, admin):
+    '''
+    Create a new user on the RabbitMQ server
+
+    :param user str: the username
+    :param password str: the password for the given user
+    :param admin bool: do we want to make the user an admin?
+    '''
+    # create user
+    sudo('rabbitmqctl add_user %s %s' % (user, password,))
+    # make it the admin
+    if admin:
+        sudo('rabbitmqctl set_admin %s' % user)
+
+
+def create_rabbitmq_vhost(vhost, user):
+    '''
+    Create a new vhost in the RabbitMQ server and give the user all permissions
+    to that vhost.
+
+    :param vhost str: the vhost
+    :param user str: the username
+    '''
+    # create vhost
+    sudo('rabbitmqctl add_vhost %s' % vhost)
+    # add permissions for user to vhost
+    sudo('rabbitmqctl set_permissions -p %s %s \'.*\' \'.*\' \'.*\'' % (vhost, user,))
