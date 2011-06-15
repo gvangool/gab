@@ -8,7 +8,7 @@ from fabric.api import sudo, run
 # - key -> type (shortcut for dict[type])
 
 service_information = {'__default__': {'type': 'upstart',
-                                       'restart': False,},}
+                                       'restart': False, }, }
 
 
 def add_service_information(name, value):
@@ -129,11 +129,11 @@ def status(*services):
 
 
 # initialize the default service
-add_service_information('apache', {'name': 'apache2',})
+add_service_information('apache', {'name': 'apache2', })
 add_service_information('apache2', 'service')
-add_service_information('jetty', {'type': 'service', 'restart': False,})
+add_service_information('jetty', {'type': 'service', 'restart': False, })
 add_service_information('memcached', 'service')
 add_service_information('mysql', 'service')
 add_service_information('nginx', 'service')
-add_service_information('rabbitmq', {'name': 'rabbitmq-server',})
+add_service_information('rabbitmq', {'name': 'rabbitmq-server', })
 add_service_information('rabbitmq-server', 'service')

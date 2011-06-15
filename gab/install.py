@@ -84,7 +84,7 @@ def install_duplicity(env_name='backup'):
 def install_nginx(stable=True):
     '''Install nginx as a webserver or reverse proxy'''
     if not stable:
-        version = '0.8.54' # although this is stable at the moment
+        version = '0.8.54'  # although this is stable at the moment
     install('nginx')  # install it to get stable version and initial config
     if not stable:
         stop('nginx')
