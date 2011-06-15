@@ -13,7 +13,7 @@ def shell(cmd):
 def set_hostname(new_hostname):
     'Set the hostname on the server'
     sudo('echo %s > /etc/hostname' % new_hostname)
-    append('127.0.1.1\t%s' % new_hostname, '/etc/hosts', use_sudo=True)
+    sudo('echo 127.0.1.1\t%s >> /etc/hosts' % new_hostname)
     sudo('hostname -F /etc/hostname')
 
 
