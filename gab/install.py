@@ -33,7 +33,7 @@ def install_python(type=''):
     '''Install Python stuff'''
     install('python', 'python-setuptools', 'python-dev', 'build-essential')
     sudo('easy_install pip')
-    sudo('pip install virtualenv virtualenvwrapper')
+    sudo('pip install -U pip virtualenv virtualenvwrapper')
     if type == 'dev':
         # extra's to build certain python packages
         # needed to build MySQL-python
