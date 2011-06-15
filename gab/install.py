@@ -81,12 +81,14 @@ def install_duplicity(env_name='backup'):
     run('pip install -E %s http://code.launchpad.net/duplicity/0.6-series/0.6.05/+download/duplicity-0.6.05.tar.gz' % py_env)
 
 
-def install_nginx(stable=True):
-    '''Install nginx as a webserver or reverse proxy'''
-    if not stable:
-        version = '0.8.54'  # although this is stable at the moment
+def install_nginx(version=None):
+    '''
+    Install nginx as a webserver or reverse proxy
+
+    :param version str: the version of nginx you want to have installed if it's a different version than the repository version. E.g. 1.0.4
+    '''
     install('nginx')  # install it to get stable version and initial config
-    if not stable:
+    if version:  # if a version is specified, install that and overwrite the repo version
         stop('nginx')
         run('mkdir -p src')
         with cd('src'):
