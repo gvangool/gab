@@ -109,3 +109,26 @@ def create_rabbitmq_vhost(vhost, user):
     sudo('rabbitmqctl add_vhost %s' % vhost)
     # add permissions for user to vhost
     sudo('rabbitmqctl set_permissions -p %s %s \'.*\' \'.*\' \'.*\'' % (vhost, user,))
+
+
+def add_ssh_config(hostname, username, identity_file):
+    '''
+    Add a line to the ssh config file (found in ``~/.ssh/config``).
+
+    E.g. the configuration for github::
+        Host github.com
+            User git
+            Hostname github.com
+            IdentityFile ~/.ssh/lulu_rsa
+
+
+    :param hostname str: the external host
+    :param username str: the username you need to use when you connect to that host, specify ``*`` if it's for all usernames
+    :param identity_file str: the location to the private key file
+    '''
+    v = {'host': hostname, 'user': username, 'key': identity_file, }
+    run('echo "Host %(host)s\n'
+        '\tUser %(user)s\n'
+        '\tHostname %(host)s\n'
+        '\tIdentityFile %(key)s" >> ~/.ssh/config' % v)
+    run('ssh-keyscan %s >> .ssh/known_hosts' % hostname)
