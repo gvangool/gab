@@ -23,7 +23,7 @@ def set_apt_proxy(host):
 
     ``host`` should be something like http://localhost:3142
     '''
-    sudo('echo Acquire::http::Proxy "%s";  > /etc/apt/apt.conf.d/01proxy' %
+    sudo('echo \'Acquire::http::Proxy "%s";\'  | tee /etc/apt/apt.conf.d/01proxy > /dev/null' %
          (host,)
     )
 
