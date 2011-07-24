@@ -76,7 +76,8 @@ def install_ruby():
 def install_duplicity(env_name='backup'):
     '''Install the duplicity backup tool (http://duplicity.nongnu.org/)'''
     py_env = '~/env/%s' % env_name
-    install('python', 'python-setuptools', 'python-dev', 'build-essential', 'librsync-dev')
+    install_python()
+    install('librsync-dev')
     run('pip install -E %s boto' % py_env)
     run('pip install -E %s http://code.launchpad.net/duplicity/0.6-series/0.6.05/+download/duplicity-0.6.05.tar.gz' % py_env)
 
