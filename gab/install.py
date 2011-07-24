@@ -79,7 +79,8 @@ def install_duplicity(env_name='backup'):
     install_python()
     install('librsync-dev')
     run('pip install -E %s boto' % py_env)
-    run('pip install -E %s http://code.launchpad.net/duplicity/0.6-series/0.6.05/+download/duplicity-0.6.05.tar.gz' % py_env)
+    url = 'http://code.launchpad.net/duplicity/0.6-series/0.6.05/+download/duplicity-0.6.05.tar.gz'
+    run('pip install -E %s %s' % (py_env, url))
 
 
 def install_nginx(version=None):
@@ -88,15 +89,19 @@ def install_nginx(version=None):
 
     :param version str: the version of nginx you want to have installed if it's a different version than the repository version. E.g. 1.0.4
     '''
-    install('nginx')  # install it to get stable version and initial config
-    if version:  # if a version is specified, install that and overwrite the repo version
+    # install from the repository to get stable version and initial config
+    install('nginx')
+    # if a version is specified, install that and overwrite the repo version
+    if version:
         stop('nginx')
         run('mkdir -p src')
         with cd('src'):
             run('wget http://sysoev.ru/nginx/nginx-%s.tar.gz' % version)
             run('tar xf nginx-%s.tar.gz' % version)
             # requirements for nginx
-            install('build-essential', 'libc6', 'libpcre3', 'libpcre3-dev', 'libpcrecpp0', 'libssl0.9.8', 'libssl-dev', 'zlib1g', 'zlib1g-dev', 'lsb-base')
+            install('build-essential', 'libc6', 'libpcre3', 'libpcre3-dev',
+                    'libpcrecpp0', 'libssl0.9.8', 'libssl-dev', 'zlib1g',
+                    'zlib1g-dev', 'lsb-base')
             with cd('nginx-%s' % version):
                 run('''./configure --with-http_ssl_module \\
                        --with-sha1=/usr/lib \\
@@ -189,10 +194,12 @@ def install_cdripper():
     Website: http://wiki.hydrogenaudio.org/index.php?title=Rubyripper
     '''
     version = '0.5.7'
-    install('build-essential', 'cd-discid', 'cdparanoia', 'flac', 'lame', 'mp3gain', 'normalize-audio', 'ruby-gnome2', 'ruby', 'vorbisgain')
+    install('build-essential', 'cd-discid', 'cdparanoia', 'flac', 'lame',
+            'mp3gain', 'normalize-audio', 'ruby-gnome2', 'ruby', 'vorbisgain')
     run('mkdir -p src')
     with cd('src'):
-        run('wget http://rubyripper.googlecode.com/files/rubyripper-%s.tar.bz2' % version)
+        url = 'http://rubyripper.googlecode.com/files/rubyripper-%s.tar.bz2' % version
+        run('wget %s' % url)
         run('bzip2 -d rubyripper-%s.tar.bz2' % version)
         run('tar xf rubyripper-%s.tar' % version)
         with cd('rubyripper-%s' % version):
@@ -232,7 +239,9 @@ def install_moc(add_lastfm=True):
         username = prompt('Last.fm username?', validate=lambda v: _validate_not_empty(v, key='username'))
         password = prompt('Last.fm password?', validate=lambda v: _validate_not_empty(v, key='password'))
         # create lastfm config
-        append('/etc/lastfmsubmitd.conf', '[account]\nuser = %s\npassword = %s' % (username, password,), use_sudo=True)
+        append('/etc/lastfmsubmitd.conf',
+               '[account]\nuser = %s\npassword = %s' % (username, password, ),
+               use_sudo=True)
         # add user to lastfm group so we can submit
         sudo('adduser %s lastfm' % env.user)
         # setup moc to submit to lastfm on song change (use script from
@@ -242,7 +251,8 @@ def install_moc(add_lastfm=True):
         with cd('~/.moc'):
             run('wget http://files.lukeplant.fastmail.fm/public/moc_submit_lastfm')
             run('chmod a+x moc_submit_lastfm')
-            append('config', 'OnSongChange = "/home/%(user)s/.moc/moc_submit_lastfm --artist %%a --title %%t --length %%d --album %%r"' % env)
+            append('config',
+                   'OnSongChange = "/home/%(user)s/.moc/moc_submit_lastfm --artist %%a --title %%t --length %%d --album %%r"' % env)
 
 
 def install_systools():
@@ -259,7 +269,8 @@ def install_memcached(version='1.4.5', daemon=False):
             run('wget http://memcached.googlecode.com/files/memcached-%s.tar.gz' % version)
             run('tar xf memcached-%s.tar.gz' % version)
             with cd('memcached-%s' % version):
-                args = ['--prefix=', '--exec-prefix=/usr', '--datarootdir=/usr']
+                args = ['--prefix=', '--exec-prefix=/usr',
+                        '--datarootdir=/usr']
                 if getattr(env, 'is_64bit', False):
                     args.append('--enable-64bit')
                 run('./configure %s' % ' '.join(args))
