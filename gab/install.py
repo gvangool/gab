@@ -95,7 +95,7 @@ def install_nginx(version=None):
             run('wget http://sysoev.ru/nginx/nginx-%s.tar.gz' % version)
             run('tar xf nginx-%s.tar.gz' % version)
             # requirements for nginx
-            install('libc6', 'libpcre3', 'libpcre3-dev', 'libpcrecpp0', 'libssl0.9.8', 'libssl-dev', 'zlib1g', 'zlib1g-dev', 'lsb-base')
+            install('build-essential', 'libc6', 'libpcre3', 'libpcre3-dev', 'libpcrecpp0', 'libssl0.9.8', 'libssl-dev', 'zlib1g', 'zlib1g-dev', 'lsb-base')
             with cd('nginx-%s' % version):
                 run('''./configure --with-http_ssl_module \\
                        --with-sha1=/usr/lib \\
@@ -188,7 +188,7 @@ def install_cdripper():
     Website: http://wiki.hydrogenaudio.org/index.php?title=Rubyripper
     '''
     version = '0.5.7'
-    install('cd-discid', 'cdparanoia', 'flac', 'lame', 'mp3gain', 'normalize-audio', 'ruby-gnome2', 'ruby', 'vorbisgain')
+    install('build-essential', 'cd-discid', 'cdparanoia', 'flac', 'lame', 'mp3gain', 'normalize-audio', 'ruby-gnome2', 'ruby', 'vorbisgain')
     run('mkdir -p src')
     with cd('src'):
         run('wget http://rubyripper.googlecode.com/files/rubyripper-%s.tar.bz2' % version)
