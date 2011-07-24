@@ -231,7 +231,7 @@ def install_moc(add_lastfm=True):
         username = prompt('Last.fm username?', validate=lambda v: _validate_not_empty(v, key='username'))
         password = prompt('Last.fm password?', validate=lambda v: _validate_not_empty(v, key='password'))
         # create lastfm config
-        append('[account]\nuser = %s\npassword = %s' % (username, password,), '/etc/lastfmsubmitd.conf', use_sudo=True)
+        append('/etc/lastfmsubmitd.conf', '[account]\nuser = %s\npassword = %s' % (username, password,), use_sudo=True)
         # add user to lastfm group so we can submit
         sudo('adduser %s lastfm' % env.user)
         # setup moc to submit to lastfm on song change (use script from
@@ -241,7 +241,7 @@ def install_moc(add_lastfm=True):
         with cd('~/.moc'):
             run('wget http://files.lukeplant.fastmail.fm/public/moc_submit_lastfm')
             run('chmod a+x moc_submit_lastfm')
-            append('OnSongChange = "/home/%(user)s/.moc/moc_submit_lastfm --artist %%a --title %%t --length %%d --album %%r"' % env, 'config')
+            append('config', 'OnSongChange = "/home/%(user)s/.moc/moc_submit_lastfm --artist %%a --title %%t --length %%d --album %%r"' % env)
 
 
 def install_systools():
@@ -287,7 +287,7 @@ def install_memcached_client():
             run('make')
             sudo('make install')
     if not exists('/etc/ld.so.conf.d/local_lib'):
-        append('/usr/local/lib/', '/etc/ld.so.conf.d/local_lib', use_sudo=True)
+        append('/etc/ld.so.conf.d/local_lib', '/usr/local/lib/', use_sudo=True)
         sudo('ldconfig')
 
 
@@ -311,7 +311,7 @@ def install_solr():
     '''Install SOLR: http://lucene.apache.org/solr/'''
     install('solr-jetty', 'openjdk-6-jdk')
     sed('/etc/default/jetty', 'NO_START=1', 'NO_START=0', use_sudo=True)
-    append('JETTY_HOST=0.0.0.0', '/etc/default/jetty', use_sudo=True)
+    append('/etc/default/jetty', 'JETTY_HOST=0.0.0.0', use_sudo=True)
     # move configuration files to current users dir
     run('mkdir -p etc/solr/conf')
     for f in ('etc/solr/conf/schema.xml', 'etc/solr/conf/solrconfig.xml'):
