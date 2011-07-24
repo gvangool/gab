@@ -250,15 +250,15 @@ def install_systools():
     install('htop', 'iotop', 'sysstat', 'nethogs')
 
 
-def install_memcached(daemon=False):
+def install_memcached(version='1.4.5', daemon=False):
     'Install memcached server'
     if not exists('/usr/bin/memcached'):
         install('libevent-dev', 'build-essential')
         run('mkdir -p src')
         with cd('src'):
-            run('wget http://memcached.googlecode.com/files/memcached-1.4.5.tar.gz')
-            run('tar xf memcached-1.4.5.tar.gz')
-            with cd('memcached-1.4.5'):
+            run('wget http://memcached.googlecode.com/files/memcached-%s.tar.gz' % version)
+            run('tar xf memcached-%s.tar.gz' % version)
+            with cd('memcached-%s' % version):
                 args = ['--prefix=', '--exec-prefix=/usr', '--datarootdir=/usr']
                 if getattr(env, 'is_64bit', False):
                     args.append('--enable-64bit')
@@ -274,16 +274,17 @@ def install_memcached(daemon=False):
         start('memcached')
 
 
-def install_memcached_client():
+def install_memcached_client(version='0.50'):
     'Install libmemcached as client library for memcached'
     if not exists('/usr/bin/memcached'):
         install_memcached()
     install('libevent-dev', 'build-essential')
     run('mkdir -p src')
     with cd('src'):
-        run('wget http://launchpad.net/libmemcached/1.0/0.43/+download/libmemcached-0.43.tar.gz')
-        run('tar xf libmemcached-0.43.tar.gz')
-        with cd('libmemcached-0.43'):
+        v = {'version': version}
+        run('wget http://launchpad.net/libmemcached/1.0/%(version)s/+download/libmemcached-%(version)s.tar.gz' % v)
+        run('tar xf libmemcached-%(version)s.tar.gz' % v)
+        with cd('libmemcached-%(version)s' % v):
             run('./configure')
             run('make')
             sudo('make install')
