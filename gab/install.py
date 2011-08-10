@@ -76,9 +76,11 @@ def install_ruby():
 def install_duplicity(env_name='backup'):
     '''Install the duplicity backup tool (http://duplicity.nongnu.org/)'''
     py_env = '~/env/%s' % env_name
-    install('python', 'python-setuptools', 'python-dev', 'build-essential', 'librsync-dev')
+    install_python()
+    install('librsync-dev')
     run('pip install -E %s boto' % py_env)
-    run('pip install -E %s http://code.launchpad.net/duplicity/0.6-series/0.6.05/+download/duplicity-0.6.05.tar.gz' % py_env)
+    url = 'http://code.launchpad.net/duplicity/0.6-series/0.6.05/+download/duplicity-0.6.05.tar.gz'
+    run('pip install -E %s %s' % (py_env, url))
 
 
 def install_nginx(version=None):
@@ -87,15 +89,19 @@ def install_nginx(version=None):
 
     :param version str: the version of nginx you want to have installed if it's a different version than the repository version. E.g. 1.0.4
     '''
-    install('nginx')  # install it to get stable version and initial config
-    if version:  # if a version is specified, install that and overwrite the repo version
+    # install from the repository to get stable version and initial config
+    install('nginx')
+    # if a version is specified, install that and overwrite the repo version
+    if version:
         stop('nginx')
         run('mkdir -p src')
         with cd('src'):
             run('wget http://sysoev.ru/nginx/nginx-%s.tar.gz' % version)
             run('tar xf nginx-%s.tar.gz' % version)
             # requirements for nginx
-            install('libc6', 'libpcre3', 'libpcre3-dev', 'libpcrecpp0', 'libssl0.9.8', 'libssl-dev', 'zlib1g', 'zlib1g-dev', 'lsb-base')
+            install('build-essential', 'libc6', 'libpcre3', 'libpcre3-dev',
+                    'libpcrecpp0', 'libssl0.9.8', 'libssl-dev', 'zlib1g',
+                    'zlib1g-dev', 'lsb-base')
             with cd('nginx-%s' % version):
                 run('''./configure --with-http_ssl_module \\
                        --with-sha1=/usr/lib \\
@@ -188,10 +194,12 @@ def install_cdripper():
     Website: http://wiki.hydrogenaudio.org/index.php?title=Rubyripper
     '''
     version = '0.5.7'
-    install('cd-discid', 'cdparanoia', 'flac', 'lame', 'mp3gain', 'normalize-audio', 'ruby-gnome2', 'ruby', 'vorbisgain')
+    install('build-essential', 'cd-discid', 'cdparanoia', 'flac', 'lame',
+            'mp3gain', 'normalize-audio', 'ruby-gnome2', 'ruby', 'vorbisgain')
     run('mkdir -p src')
     with cd('src'):
-        run('wget http://rubyripper.googlecode.com/files/rubyripper-%s.tar.bz2' % version)
+        url = 'http://rubyripper.googlecode.com/files/rubyripper-%s.tar.bz2' % version
+        run('wget %s' % url)
         run('bzip2 -d rubyripper-%s.tar.bz2' % version)
         run('tar xf rubyripper-%s.tar' % version)
         with cd('rubyripper-%s' % version):
@@ -231,7 +239,9 @@ def install_moc(add_lastfm=True):
         username = prompt('Last.fm username?', validate=lambda v: _validate_not_empty(v, key='username'))
         password = prompt('Last.fm password?', validate=lambda v: _validate_not_empty(v, key='password'))
         # create lastfm config
-        append('[account]\nuser = %s\npassword = %s' % (username, password,), '/etc/lastfmsubmitd.conf', use_sudo=True)
+        append('/etc/lastfmsubmitd.conf',
+               '[account]\nuser = %s\npassword = %s' % (username, password, ),
+               use_sudo=True)
         # add user to lastfm group so we can submit
         sudo('adduser %s lastfm' % env.user)
         # setup moc to submit to lastfm on song change (use script from
@@ -241,7 +251,8 @@ def install_moc(add_lastfm=True):
         with cd('~/.moc'):
             run('wget http://files.lukeplant.fastmail.fm/public/moc_submit_lastfm')
             run('chmod a+x moc_submit_lastfm')
-            append('OnSongChange = "/home/%(user)s/.moc/moc_submit_lastfm --artist %%a --title %%t --length %%d --album %%r"' % env, 'config')
+            append('config',
+                   'OnSongChange = "/home/%(user)s/.moc/moc_submit_lastfm --artist %%a --title %%t --length %%d --album %%r"' % env)
 
 
 def install_systools():
@@ -249,18 +260,18 @@ def install_systools():
     install('htop', 'iotop', 'sysstat', 'nethogs')
 
 
-def install_memcached(daemon=False):
+def install_memcached(version='1.4.5', daemon=False):
     'Install memcached server'
     if not exists('/usr/bin/memcached'):
         install('libevent-dev', 'build-essential')
         run('mkdir -p src')
         with cd('src'):
-            run('wget http://memcached.googlecode.com/files/memcached-1.4.5.tar.gz')
-            run('tar xf memcached-1.4.5.tar.gz')
+            run('wget http://memcached.googlecode.com/files/memcached-%s.tar.gz' % version)
+            run('tar xf memcached-%s.tar.gz' % version)
             install('gcc-4.4')
-            with cd('memcached-1.4.5'):
-                args = ['--prefix=', '--exec-prefix=/usr', '--datarootdir=/usr',
-                        'CC=gcc-4.4']
+            with cd('memcached-%s' % version):
+                args = ['--prefix=', '--exec-prefix=/usr',
+                        '--datarootdir=/usr', 'CC=gcc-4.4']
                 if getattr(env, 'is_64bit', False):
                     args.append('--enable-64bit')
                 run('./configure %s' % ' '.join(args))
@@ -275,21 +286,22 @@ def install_memcached(daemon=False):
         start('memcached')
 
 
-def install_memcached_client():
+def install_memcached_client(version='0.50'):
     'Install libmemcached as client library for memcached'
     if not exists('/usr/bin/memcached'):
         install_memcached()
     install('libevent-dev', 'build-essential')
     run('mkdir -p src')
     with cd('src'):
-        run('wget http://launchpad.net/libmemcached/1.0/0.43/+download/libmemcached-0.43.tar.gz')
-        run('tar xf libmemcached-0.43.tar.gz')
-        with cd('libmemcached-0.43'):
+        v = {'version': version}
+        run('wget http://launchpad.net/libmemcached/1.0/%(version)s/+download/libmemcached-%(version)s.tar.gz' % v)
+        run('tar xf libmemcached-%(version)s.tar.gz' % v)
+        with cd('libmemcached-%(version)s' % v):
             run('./configure')
             run('make')
             sudo('make install')
     if not exists('/etc/ld.so.conf.d/local_lib'):
-        append('/usr/local/lib/', '/etc/ld.so.conf.d/local_lib', use_sudo=True)
+        append('/etc/ld.so.conf.d/local_lib', '/usr/local/lib/', use_sudo=True)
         sudo('ldconfig')
 
 
@@ -313,7 +325,7 @@ def install_solr():
     '''Install SOLR: http://lucene.apache.org/solr/'''
     install('solr-jetty', 'openjdk-6-jdk')
     sed('/etc/default/jetty', 'NO_START=1', 'NO_START=0', use_sudo=True)
-    append('JETTY_HOST=0.0.0.0', '/etc/default/jetty', use_sudo=True)
+    append('/etc/default/jetty', 'JETTY_HOST=0.0.0.0', use_sudo=True)
     # move configuration files to current users dir
     run('mkdir -p etc/solr/conf')
     for f in ('etc/solr/conf/schema.xml', 'etc/solr/conf/solrconfig.xml'):
