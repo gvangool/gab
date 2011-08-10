@@ -76,9 +76,15 @@ def install_nginx_config(path, site_name, id='00'):
     if not exists(path):
         return
 
-    sudo('ln -s %s /etc/nginx/sites-available/%s' % (path, site_name,))
-    sudo('''ln -s /etc/nginx/sites-available/%(site_name)s \
-            /etc/nginx/sites-enabled/%(id)s_%(site_name)s''' % locals())
+    available = '/etc/nginx/sites-available/%s' % site_name
+    enabled = '/etc/nginx/sites-enabled/%(id)s_%(site_name)s' % {
+            'id': id,
+            'site_name': site_name
+        }
+    if not exists(available):
+        sudo('ln -s %s %s' % (path, available))
+    if not exists(enabled):
+        sudo('ln -s %s %s' % (available, enabled))
     restart('nginx')
 
 
