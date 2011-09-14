@@ -260,7 +260,7 @@ def install_systools():
     install('htop', 'iotop', 'sysstat', 'nethogs')
 
 
-def install_memcached(version='1.4.5', daemon=False):
+def install_memcached(version='1.4.7', daemon=False):
     'Install memcached server'
     if not exists('/usr/bin/memcached'):
         install('libevent-dev', 'build-essential')

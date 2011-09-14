@@ -100,7 +100,8 @@ def create_rabbitmq_user(user, password, admin):
     sudo('rabbitmqctl add_user %s %s' % (user, password,))
     # make it the admin
     if admin:
-        sudo('rabbitmqctl set_admin %s' % user)
+        #sudo('rabbitmqctl set_admin %s' % user)
+        sudo('rabbitmqctl set_user_tags %s administrator' % user)
 
 
 def create_rabbitmq_vhost(vhost, user):
