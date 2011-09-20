@@ -18,10 +18,34 @@ def add_service_information(name, value):
 
 
 def _name(service):
+    '''
+    Find the actual service name (expand the aliases)
+
+    :param str service: the service for which you want the real name
+
+    :return: the actual service name
+    '''
     info = service_information.get(service, '')
     if 'name' in info:
-        return info['name']
+        return _name(info['name'])
     return service
+
+
+def _service_info(service):
+    '''
+    Find the correct service information object
+
+    :param str service: the service for which you want the information dict
+
+    :return: a tuple containing the actual service name and the dict with
+        detailed information
+    :rtype: tuple
+    '''
+    # get the real name
+    service = _name(service)
+    # find the dict or return the default dict
+    default = service_information['__default__']
+    return (service, service_information.get(service, default))
 
 
 def _supports_restart(service):
