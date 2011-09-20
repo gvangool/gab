@@ -49,23 +49,17 @@ def _service_info(service):
 
 
 def _supports_restart(service):
-    default = service_information['__default__']
-    info = service_information.get(service, default)
+    service, info = _service_info(service)
     if 'restart' in info:
         return info['restart']
     elif 'type' in info:
         return info['type'] != 'upstart'
-    elif 'name' in info:
-        return _supports_restart(info['name'])
 
 
 def _service_type(service):
-    default = service_information['__default__']
-    info = service_information.get(service, default)
+    service, info = _service_info(service)
     if 'type' in info:
         return info['type']
-    elif 'name' in info:
-        return _service_type(info['name'])
 
 
 def _start(service):
