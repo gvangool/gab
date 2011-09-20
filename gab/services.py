@@ -1,4 +1,7 @@
 from fabric.api import sudo, run
+from fabric.context_managers import settings
+from fabric.contrib.console import confirm
+from fabric.utils import abort
 
 # current format:
 # - key -> dict:
@@ -9,6 +12,14 @@ from fabric.api import sudo, run
 
 service_information = {'__default__': {'type': 'upstart',
                                        'restart': False, }, }
+
+
+#: default stop commands, this should contain every ``type`` of services (e.g.
+#: ``upstart``, ``service``)
+STOP_CMD = {
+    'service': 'service %(service)s stop',
+    'upstart': 'stop %(service)s'
+}
 
 
 def add_service_information(name, value):
@@ -82,18 +93,22 @@ def start(*services):
 
 def _stop(service):
     'Stop a service'
-    service = _name(service)
-    st = _service_type(service)
-    if st == 'service':
-        sudo('service %s stop' % service)
-        if service == 'mysql':
-            # Due to a minor MySQL bug this may be necessary
-            try:
-                sudo('killall mysqld_safe')
-            except:
-                pass
-    elif st == 'upstart':
-        sudo('stop %s' % service)
+    service, info = _service_info(service)
+    if 'stop_cmd' in info:
+        stop_cmd = info['stop_cmd']
+    elif 'type' in info:
+        stop_cmd = STOP_CMD[info['type']]
+
+    with settings(warn_only=True):
+        resp = sudo(stop_cmd % {'service': service})
+        if resp:
+            print resp
+            if not confirm(
+                    'Something failed while trying to stop %s. Can we continue?' % service,
+                    default=True
+               ):
+                abort('Aborted!')
+
 
 
 def stop(*services):
@@ -151,7 +166,11 @@ add_service_information('apache', {'name': 'apache2', })
 add_service_information('apache2', 'service')
 add_service_information('jetty', {'type': 'service', 'restart': False, })
 add_service_information('memcached', 'service')
-add_service_information('mysql', 'service')
+add_service_information(
+    'mysql',
+    {'type': 'service',
+     'stop_cmd': 'service mysql stop; killall mysqld_safe'}
+)
 add_service_information('nginx', 'service')
 add_service_information('rabbitmq', {'name': 'rabbitmq-server', })
 add_service_information('rabbitmq-server', 'service')
