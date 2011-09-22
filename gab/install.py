@@ -96,7 +96,7 @@ def install_nginx(version=None):
         stop('nginx')
         run('mkdir -p src')
         with cd('src'):
-            run('wget http://sysoev.ru/nginx/nginx-%s.tar.gz' % version)
+            run('wget http://nginx.org/download/nginx-%s.tar.gz' % version)
             run('tar xf nginx-%s.tar.gz' % version)
             # requirements for nginx
             install('build-essential', 'libc6', 'libpcre3', 'libpcre3-dev',
