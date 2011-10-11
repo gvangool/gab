@@ -34,7 +34,7 @@ sd_url: %(url)s
 agent_key: %(key)s
 ''' % {'url': url,
        'key': key}
-    append(config, '/etc/sd-agent/config.cfg', use_sudo=True)
+    append('/etc/sd-agent/config.cfg', config, use_sudo=True)
     start('sd-agent')
 
 
@@ -42,7 +42,7 @@ def _update_config(line):
     '''
     Update the ServerDensity agent and restart it.
     '''
-    append(line, '/etc/sd-agent/config.cfg', use_sudo=True)
+    append('/etc/sd-agent/config.cfg', line, use_sudo=True)
     restart('sd-agent')
 
 
