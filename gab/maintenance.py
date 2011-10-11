@@ -17,20 +17,6 @@ def update(dselect=False):
     '''
     apt_update()
     apt_upgrade(dselect)
-    vcs_update = {'git': 'git pull', 'hg': 'hg update', 'svn': 'svn up'}
-    if exists('.git'):
-        run(vcs_update['git'])
-    if exists('.svn'):
-        run(vcs_update['svn'])
-    if exists('.repos'):
-        # read the file and find all the existing repositories
-        get('~/.repos', '/tmp/repos')
-        f = open('/tmp/repos')
-        for line in f.readlines():
-            line = line.strip()
-            parts = line.split(' ')
-            with cd(parts[1]):
-                run(vcs_update[parts[0]])
 
 
 def apt_update():
