@@ -5,15 +5,21 @@ from gab.validators import yes_or_no as _yes_or_no
 
 
 def _apt_get(cmd):
+    '''
+    Wrapper for ``apt-get``. This will set the :envvar:`DEBIAN_FRONTEND` to
+    ``noninteractive``.
+
+    :param str cmd: the rest of the ``apt-get`` command
+    '''
     return sudo('export DEBIAN_FRONTEND=noninteractive; apt-get %s' % cmd)
 
 
 def update(dselect=False):
     '''
-    Update everything.
+    Update everything. It will update & upgrade all installed packages.
 
-    It will update & upgrade all installed packages. And it will also try to
-    update extra repositories.
+    :param bool dselect: whether or not to trigger the
+        ``apt-get dselect-upgrade`` behaviour.
     '''
     apt_update()
     apt_upgrade(dselect)
@@ -28,7 +34,8 @@ def apt_upgrade(dselect=False):
     '''
     Upgrade installed packages
 
-    ``dselect`` will trigger the ``apt-get dselect-upgrade`` behaviour.
+    :param bool dselect: whether or not to trigger the
+        ``apt-get dselect-upgrade`` behaviour.
     '''
     _apt_get('upgrade -yq')
     if dselect:
@@ -46,7 +53,9 @@ def install(*package_list, **options):
     '''
     Install packages
 
-    You can also pass extra options to apt-get (like allow_unauthenticated)
+    :param list package_list: a list of packages to install
+    :param dict options: pass extra options to ``apt-get``. Supported options:
+        ``allow_unauthenticated`` (``True`` or ``False``)
     '''
     if len(package_list) == 0:
         return
