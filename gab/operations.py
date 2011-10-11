@@ -1,3 +1,5 @@
+import os
+
 from fabric.api import sudo, run
 from fabric.contrib.files import append, exists
 
@@ -57,12 +59,18 @@ def delete_user(username):
         pass
 
 
-def install_crontab(path):
+def install_crontab(remote, local=None):
     '''Install the cron file'''
-    if not exists(path):
+    if local and os.path.exists(local):
+        # check whether we need to create directories
+        remote_path = os.path.dirname(remote)
+        if remote_path:
+            run('mkdir -p %s' % remote_path)
+        put(local, remote)
+    if not exists(remote):
         return
 
-    run('crontab %s' % (path,))
+    run('crontab %s' % (remote,))
 
 
 def remove_crontab():
