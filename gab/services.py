@@ -23,6 +23,13 @@ STOP_CMD = {
 
 
 def add_service_information(name, value):
+    '''
+    Add extra information for special services
+
+    :param str name: the name of the service
+    :param value: the service information. Support formatting: ``{'type': str, 'restart: bool, 'name': str}``
+    :type value: str or dict
+    '''
     if not isinstance(value, dict):
         value = {'type': value}
     service_information[name] = value
