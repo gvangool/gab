@@ -6,6 +6,12 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   install
+   maintenance
+   operations
+   services
+   setup
+   validators
 
 
 Indices and tables
