@@ -101,7 +101,7 @@ def _stop(service):
 
     with settings(warn_only=True):
         resp = sudo(stop_cmd % {'service': service})
-        if resp:
+        if not resp.succeeded:
             print resp
             if not confirm(
                     'Something failed while trying to stop %s. Can we continue?' % service,
