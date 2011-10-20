@@ -37,7 +37,7 @@ def install_python(type=''):
     if type == 'dev':
         # extra's to build certain python packages
         # needed to build MySQL-python
-        install('libmysqlclient15-dev')
+        install('libmysqlclient-dev')
         # needed for PIL
         install('libfreetype6-dev', 'libjpeg-dev')
 
