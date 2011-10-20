@@ -83,7 +83,7 @@ def install_duplicity(env_name='backup'):
     run('pip install -E %s %s' % (py_env, url))
 
 
-def install_nginx(version=None):
+def install_nginx(version=None, remove_default=True):
     '''
     Install nginx as a webserver or reverse proxy
 
@@ -91,6 +91,10 @@ def install_nginx(version=None):
     '''
     # install from the repository to get stable version and initial config
     install('nginx')
+    default_site = '/etc/nginx/sites-enabled/default'
+    if remove_default and exists(default_site):
+        sudo('rm %s' % default_site)
+        restart('nginx')
     # if a version is specified, install that and overwrite the repo version
     if version:
         stop('nginx')
