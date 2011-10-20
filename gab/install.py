@@ -260,7 +260,7 @@ def install_systools():
     install('htop', 'iotop', 'sysstat', 'nethogs')
 
 
-def install_memcached(version='1.4.5', daemon=False):
+def install_memcached(version='1.4.9', daemon=False):
     'Install memcached server'
     if not exists('/usr/bin/memcached'):
         install('libevent-dev', 'build-essential')
@@ -285,7 +285,7 @@ def install_memcached(version='1.4.5', daemon=False):
         start('memcached')
 
 
-def install_memcached_client(version='0.50'):
+def install_memcached_client(version='0.53'):
     'Install libmemcached as client library for memcached'
     if not exists('/usr/bin/memcached'):
         install_memcached()
