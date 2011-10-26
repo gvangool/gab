@@ -37,7 +37,7 @@ def install_python(type=''):
     if type == 'dev':
         # extra's to build certain python packages
         # needed to build MySQL-python
-        install('libmysqlclient15-dev')
+        install('libmysqlclient-dev')
         # needed for PIL
         install('libfreetype6-dev', 'libjpeg-dev')
 
@@ -83,7 +83,7 @@ def install_duplicity(env_name='backup'):
     run('pip install -E %s %s' % (py_env, url))
 
 
-def install_nginx(version=None):
+def install_nginx(version=None, remove_default=True):
     '''
     Install nginx as a webserver or reverse proxy
 
@@ -91,6 +91,10 @@ def install_nginx(version=None):
     '''
     # install from the repository to get stable version and initial config
     install('nginx')
+    default_site = '/etc/nginx/sites-enabled/default'
+    if remove_default and exists(default_site):
+        sudo('rm %s' % default_site)
+        restart('nginx')
     # if a version is specified, install that and overwrite the repo version
     if version:
         stop('nginx')
@@ -260,7 +264,7 @@ def install_systools():
     install('htop', 'iotop', 'sysstat', 'nethogs')
 
 
-def install_memcached(version='1.4.7', daemon=False):
+def install_memcached(version='1.4.9', daemon=False):
     'Install memcached server'
     if not exists('/usr/bin/memcached'):
         install('libevent-dev', 'build-essential')
@@ -286,7 +290,7 @@ def install_memcached(version='1.4.7', daemon=False):
         start('memcached')
 
 
-def install_memcached_client(version='0.50'):
+def install_memcached_client(version='0.53'):
     'Install libmemcached as client library for memcached'
     if not exists('/usr/bin/memcached'):
         install_memcached()
@@ -308,17 +312,12 @@ def install_memcached_client(version='0.50'):
 def install_memcached_client_python():
     'Install pylibmc (and thus libmemcached) as client libraries for memcached'
     if not exists('/usr/local/lib/libmemcached.so'):
-        install_memcached_client()
-    install('python', 'python-setuptools', 'python-dev', 'build-essential')
-    run('mkdir -p src')
-    with cd('src'):
-        run('wget http://pypi.python.org/packages/source/p/pylibmc/pylibmc-1.1.1.tar.gz#md5=e43c54e285f8d937a3f1a916256ecc85')
-        run('tar xf pylibmc-1.1.1.tar.gz')
-        with cd('pylibmc-1.1.1'):
-            if hasattr(env, 'virtual_env') and exists(env.virtual_env):
-                run('%(virtual_env)s/bin/python setup.py install --with-libmemcached=/usr/local/lib' % env)
-            else:
-                sudo('python setup.py install --with-libmemcached=/usr/local/lib' % env)
+        install_memcached_client('0.50')
+    install('python', 'python-setuptools', 'python-dev', 'build-essential', 'zlib1g-dev')
+    if hasattr(env, 'virtual_env') and exists(env.virtual_env):
+        run('%(virtual_env)s/bin/pip install pylibmc' % env)
+    else:
+        sudo('pip install pylibmc')
 
 
 def install_solr():
