@@ -67,7 +67,7 @@ def install_crontab(remote, local=None):
         if remote_path:
             run('mkdir -p %s' % remote_path)
         put(local, remote)
-    if not exists(remote):
+    if not exists(remote.replace('~/', '')):
         return
 
     run('crontab %s' % (remote,))
