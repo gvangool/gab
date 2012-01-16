@@ -1,0 +1,262 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gab.operations &mdash; Gab - Gert&#39;s fabfile v1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     'v1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Gab - Gert&#39;s fabfile v1.0.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Gab - Gert&#39;s fabfile v1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for gab.operations</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">fabric.api</span> <span class="kn">import</span> <span class="n">sudo</span><span class="p">,</span> <span class="n">run</span><span class="p">,</span> <span class="n">put</span>
+<span class="kn">from</span> <span class="nn">fabric.contrib.files</span> <span class="kn">import</span> <span class="n">append</span><span class="p">,</span> <span class="n">exists</span>
+
+
+<div class="viewcode-block" id="shell"><a class="viewcode-back" href="../../operations.html#gab.operations.shell">[docs]</a><span class="k">def</span> <span class="nf">shell</span><span class="p">(</span><span class="n">cmd</span><span class="p">):</span>
+    <span class="s">&#39;Run a shell command&#39;</span>
+    <span class="k">if</span> <span class="n">cmd</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;sudo&#39;</span><span class="p">):</span>
+        <span class="n">sudo</span><span class="p">(</span><span class="n">cmd</span><span class="p">[</span><span class="mi">5</span><span class="p">:])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">run</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="set_hostname"><a class="viewcode-back" href="../../operations.html#gab.operations.set_hostname">[docs]</a><span class="k">def</span> <span class="nf">set_hostname</span><span class="p">(</span><span class="n">new_hostname</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Set the hostname on the server</span>
+
+<span class="sd">    :param str new_hostname: the hostname for the server</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;echo </span><span class="si">%s</span><span class="s"> &gt; /etc/hostname&#39;</span> <span class="o">%</span> <span class="n">new_hostname</span><span class="p">)</span>
+    <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;echo 127.0.1.1</span><span class="se">\t</span><span class="si">%s</span><span class="s"> &gt;&gt; /etc/hosts&#39;</span> <span class="o">%</span> <span class="n">new_hostname</span><span class="p">)</span>
+    <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;hostname -F /etc/hostname&#39;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="set_apt_proxy"><a class="viewcode-back" href="../../operations.html#gab.operations.set_apt_proxy">[docs]</a><span class="k">def</span> <span class="nf">set_apt_proxy</span><span class="p">(</span><span class="n">host</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Set the APT proxy.</span>
+
+<span class="sd">    :param str host: the apt-cacher-ng server, should be something like</span>
+<span class="sd">        http://localhost:3142</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;echo </span><span class="se">\&#39;</span><span class="s">Acquire::http::Proxy &quot;</span><span class="si">%s</span><span class="s">&quot;;</span><span class="se">\&#39;</span><span class="s">  | tee /etc/apt/apt.conf.d/01proxy &gt; /dev/null&#39;</span> <span class="o">%</span>
+         <span class="p">(</span><span class="n">host</span><span class="p">,)</span>
+    <span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="create_user"><a class="viewcode-back" href="../../operations.html#gab.operations.create_user">[docs]</a><span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s">&#39;password&#39;</span><span class="p">,</span> <span class="n">is_admin</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Create a new user.</span>
+
+<span class="sd">    :param str username: the new user to create</span>
+<span class="sd">    :param str password: the password for the user, default is ``password`` (optional)</span>
+<span class="sd">    :param bool is_admin: should the user have ``sudo`` rights</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c"># create user</span>
+    <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;useradd -U -m -s /bin/bash </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">username</span><span class="p">)</span>
+    <span class="c"># set password</span>
+    <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;echo &quot;</span><span class="si">%s</span><span class="s">:</span><span class="si">%s</span><span class="s">&quot; | chpasswd&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">is_admin</span><span class="p">:</span>
+        <span class="c"># add to admin group (sudoers)</span>
+        <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;adduser </span><span class="si">%s</span><span class="s"> admin&#39;</span> <span class="o">%</span> <span class="n">username</span><span class="p">)</span>
+        <span class="c"># add to adm group (administrators)</span>
+        <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;adduser </span><span class="si">%s</span><span class="s"> adm&#39;</span> <span class="o">%</span> <span class="n">username</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="delete_user"><a class="viewcode-back" href="../../operations.html#gab.operations.delete_user">[docs]</a><span class="k">def</span> <span class="nf">delete_user</span><span class="p">(</span><span class="n">username</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Delete a user and its group</span>
+
+<span class="sd">    :param str username: the user to delete</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;deluser --remove-home </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">username</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;delgroup --only-if-empty </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">username</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+</div>
+<div class="viewcode-block" id="install_crontab"><a class="viewcode-back" href="../../operations.html#gab.operations.install_crontab">[docs]</a><span class="k">def</span> <span class="nf">install_crontab</span><span class="p">(</span><span class="n">remote</span><span class="p">,</span> <span class="n">local</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Install the cron file</span>
+
+<span class="sd">    :param str remote: the server file containing the crontab information</span>
+<span class="sd">    :param str local: the local file containing that servers crontab</span>
+<span class="sd">        information. This file will be uploaded to ``remote``.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">local</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">local</span><span class="p">):</span>
+        <span class="c"># check whether we need to create directories</span>
+        <span class="n">remote_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">remote</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">remote_path</span><span class="p">:</span>
+            <span class="n">run</span><span class="p">(</span><span class="s">&#39;mkdir -p </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">remote_path</span><span class="p">)</span>
+        <span class="n">put</span><span class="p">(</span><span class="n">local</span><span class="p">,</span> <span class="n">remote</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">exists</span><span class="p">(</span><span class="n">remote</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;~/&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)):</span>
+        <span class="k">return</span>
+
+    <span class="n">run</span><span class="p">(</span><span class="s">&#39;crontab </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">remote</span><span class="p">,))</span>
+
+</div>
+<div class="viewcode-block" id="remove_crontab"><a class="viewcode-back" href="../../operations.html#gab.operations.remove_crontab">[docs]</a><span class="k">def</span> <span class="nf">remove_crontab</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Remove the cron file&#39;&#39;&#39;</span>
+    <span class="n">run</span><span class="p">(</span><span class="s">&#39;crontab -r&#39;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="install_nginx_config"><a class="viewcode-back" href="../../operations.html#gab.operations.install_nginx_config">[docs]</a><span class="k">def</span> <span class="nf">install_nginx_config</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">site_name</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s">&#39;00&#39;</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Install nginx config&#39;&#39;&#39;</span>
+    <span class="kn">from</span> <span class="nn">gab.services</span> <span class="kn">import</span> <span class="n">restart</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="k">return</span>
+
+    <span class="n">available</span> <span class="o">=</span> <span class="s">&#39;/etc/nginx/sites-available/</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">site_name</span>
+    <span class="n">enabled</span> <span class="o">=</span> <span class="s">&#39;/etc/nginx/sites-enabled/</span><span class="si">%(id)s</span><span class="s">_</span><span class="si">%(site_name)s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">{</span>
+            <span class="s">&#39;id&#39;</span><span class="p">:</span> <span class="nb">id</span><span class="p">,</span>
+            <span class="s">&#39;site_name&#39;</span><span class="p">:</span> <span class="n">site_name</span>
+        <span class="p">}</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">exists</span><span class="p">(</span><span class="n">available</span><span class="p">):</span>
+        <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;ln -s </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">available</span><span class="p">))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">exists</span><span class="p">(</span><span class="n">enabled</span><span class="p">):</span>
+        <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;ln -s </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">available</span><span class="p">,</span> <span class="n">enabled</span><span class="p">))</span>
+    <span class="n">restart</span><span class="p">(</span><span class="s">&#39;nginx&#39;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="create_rabbitmq_user"><a class="viewcode-back" href="../../operations.html#gab.operations.create_rabbitmq_user">[docs]</a><span class="k">def</span> <span class="nf">create_rabbitmq_user</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">admin</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Create a new user on the RabbitMQ server</span>
+
+<span class="sd">    :param user str: the username</span>
+<span class="sd">    :param password str: the password for the given user</span>
+<span class="sd">    :param admin bool: do we want to make the user an admin?</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c"># create user</span>
+    <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;rabbitmqctl add_user </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="p">,))</span>
+    <span class="c"># make it the admin</span>
+    <span class="k">if</span> <span class="n">admin</span><span class="p">:</span>
+        <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;rabbitmqctl set_admin </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">user</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="create_rabbitmq_vhost"><a class="viewcode-back" href="../../operations.html#gab.operations.create_rabbitmq_vhost">[docs]</a><span class="k">def</span> <span class="nf">create_rabbitmq_vhost</span><span class="p">(</span><span class="n">vhost</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Create a new vhost in the RabbitMQ server and give the user all permissions</span>
+<span class="sd">    to that vhost.</span>
+
+<span class="sd">    :param vhost str: the vhost</span>
+<span class="sd">    :param user str: the username</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c"># create vhost</span>
+    <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;rabbitmqctl add_vhost </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">vhost</span><span class="p">)</span>
+    <span class="c"># add permissions for user to vhost</span>
+    <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;rabbitmqctl set_permissions -p </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s"> </span><span class="se">\&#39;</span><span class="s">.*</span><span class="se">\&#39;</span><span class="s"> </span><span class="se">\&#39;</span><span class="s">.*</span><span class="se">\&#39;</span><span class="s"> </span><span class="se">\&#39;</span><span class="s">.*</span><span class="se">\&#39;</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">vhost</span><span class="p">,</span> <span class="n">user</span><span class="p">,))</span>
+
+</div>
+<div class="viewcode-block" id="add_ssh_config"><a class="viewcode-back" href="../../operations.html#gab.operations.add_ssh_config">[docs]</a><span class="k">def</span> <span class="nf">add_ssh_config</span><span class="p">(</span><span class="n">hostname</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">identity_file</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Add a line to the ssh config file (found in ``~/.ssh/config``).</span>
+
+<span class="sd">    E.g. the configuration for github::</span>
+
+<span class="sd">        add_ssh_config(&#39;github.com&#39;, &#39;git&#39;, &#39;~/.ssh/my_gh_key)</span>
+
+<span class="sd">    will result in::</span>
+
+<span class="sd">        Host github.com</span>
+<span class="sd">            User git</span>
+<span class="sd">            Hostname github.com</span>
+<span class="sd">            IdentityFile ~/.ssh/my_gh_key</span>
+
+
+<span class="sd">    :param hostname str: the external host</span>
+<span class="sd">    :param username str: the username you need to use when you connect to that</span>
+<span class="sd">        host, specify ``*`` if it&#39;s for all usernames</span>
+<span class="sd">    :param identity_file str: the location to the private key file</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;host&#39;</span><span class="p">:</span> <span class="n">hostname</span><span class="p">,</span> <span class="s">&#39;user&#39;</span><span class="p">:</span> <span class="n">username</span><span class="p">,</span> <span class="s">&#39;key&#39;</span><span class="p">:</span> <span class="n">identity_file</span><span class="p">,</span> <span class="p">}</span>
+    <span class="n">run</span><span class="p">(</span><span class="s">&#39;echo &quot;Host </span><span class="si">%(host)s</span><span class="se">\n</span><span class="s">&#39;</span>
+        <span class="s">&#39;</span><span class="se">\t</span><span class="s">User </span><span class="si">%(user)s</span><span class="se">\n</span><span class="s">&#39;</span>
+        <span class="s">&#39;</span><span class="se">\t</span><span class="s">Hostname </span><span class="si">%(host)s</span><span class="se">\n</span><span class="s">&#39;</span>
+        <span class="s">&#39;</span><span class="se">\t</span><span class="s">IdentityFile </span><span class="si">%(key)s</span><span class="s">&quot; &gt;&gt; ~/.ssh/config&#39;</span> <span class="o">%</span> <span class="n">v</span><span class="p">)</span>
+    <span class="n">run</span><span class="p">(</span><span class="s">&#39;ssh-keyscan </span><span class="si">%s</span><span class="s"> &gt;&gt; .ssh/known_hosts&#39;</span> <span class="o">%</span> <span class="n">hostname</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Gab - Gert&#39;s fabfile v1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Gert Van Gool.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.
+    </div>
+  </body>
+</html>

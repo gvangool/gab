@@ -1,0 +1,488 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gab.install &mdash; Gab - Gert&#39;s fabfile v1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     'v1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Gab - Gert&#39;s fabfile v1.0.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Gab - Gert&#39;s fabfile v1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for gab.install</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">fabric.api</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">fabric.contrib.files</span> <span class="kn">import</span> <span class="n">exists</span><span class="p">,</span> <span class="n">append</span><span class="p">,</span> <span class="n">sed</span>
+
+<span class="kn">from</span> <span class="nn">gab.maintenance</span> <span class="kn">import</span> <span class="n">apt_update</span><span class="p">,</span> <span class="n">install</span>
+<span class="kn">from</span> <span class="nn">gab.services</span> <span class="kn">import</span> <span class="n">restart</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">stop</span>
+<span class="kn">from</span> <span class="nn">gab.validators</span> <span class="kn">import</span> <span class="n">validate_not_empty</span> <span class="k">as</span> <span class="n">_validate_not_empty</span>
+
+
+<div class="viewcode-block" id="install_dotfiles"><a class="viewcode-back" href="../../install.html#gab.install.install_dotfiles">[docs]</a><span class="k">def</span> <span class="nf">install_dotfiles</span><span class="p">(</span><span class="n">repo</span><span class="o">=</span><span class="s">&#39;http://github.com/gvangool/dotfiles.git&#39;</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Install the dotfiles from the given repository.</span>
+
+<span class="sd">    :param str repo: git repository containing the files, default</span>
+<span class="sd">        http://github.com/gvangool/dotfiles/</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">install</span><span class="p">(</span><span class="s">&#39;git-core&#39;</span><span class="p">)</span>
+    <span class="n">run</span><span class="p">(</span><span class="s">&#39;mkdir -p src&#39;</span><span class="p">)</span>
+    <span class="n">run</span><span class="p">(</span><span class="s">&#39;git clone -nq </span><span class="si">%s</span><span class="s"> src/dotfiles&#39;</span> <span class="o">%</span> <span class="n">repo</span><span class="p">)</span>
+    <span class="n">run</span><span class="p">(</span><span class="s">&#39;mv src/dotfiles/.git ~&#39;</span><span class="p">)</span>
+    <span class="n">run</span><span class="p">(</span><span class="s">&#39;git reset --hard&#39;</span><span class="p">)</span>
+    <span class="n">run</span><span class="p">(</span><span class="s">&#39;rm -rfd src/dotfiles/&#39;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="install_default_packages"><a class="viewcode-back" href="../../install.html#gab.install.install_default_packages">[docs]</a><span class="k">def</span> <span class="nf">install_default_packages</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Install some default packages&#39;&#39;&#39;</span>
+    <span class="n">install</span><span class="p">(</span><span class="s">&#39;vim&#39;</span><span class="p">,</span> <span class="s">&#39;screen&#39;</span><span class="p">,</span> <span class="s">&#39;lynx&#39;</span><span class="p">,</span> <span class="s">&#39;tofrodos&#39;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="install_vcs"><a class="viewcode-back" href="../../install.html#gab.install.install_vcs">[docs]</a><span class="k">def</span> <span class="nf">install_vcs</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Install most used VCS (svn, git, hg) &#39;&#39;&#39;</span>
+    <span class="n">install</span><span class="p">(</span><span class="s">&#39;subversion&#39;</span><span class="p">,</span> <span class="s">&#39;git-core&#39;</span><span class="p">,</span> <span class="s">&#39;mercurial&#39;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="install_python"><a class="viewcode-back" href="../../install.html#gab.install.install_python">[docs]</a><span class="k">def</span> <span class="nf">install_python</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Install Python stuff</span>
+
+<span class="sd">    :param str type: set type to ``dev`` to install extra libraries (to build</span>
+<span class="sd">        MySQL-Python and PIL)</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">install</span><span class="p">(</span><span class="s">&#39;python&#39;</span><span class="p">,</span> <span class="s">&#39;python-setuptools&#39;</span><span class="p">,</span> <span class="s">&#39;python-dev&#39;</span><span class="p">,</span> <span class="s">&#39;build-essential&#39;</span><span class="p">)</span>
+    <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;easy_install pip&#39;</span><span class="p">)</span>
+    <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;pip install -U pip virtualenv virtualenvwrapper&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">type</span> <span class="o">==</span> <span class="s">&#39;dev&#39;</span><span class="p">:</span>
+        <span class="c"># extra&#39;s to build certain python packages</span>
+        <span class="c"># needed to build MySQL-python</span>
+        <span class="n">install</span><span class="p">(</span><span class="s">&#39;libmysqlclient-dev&#39;</span><span class="p">)</span>
+        <span class="c"># needed for PIL</span>
+        <span class="n">install</span><span class="p">(</span><span class="s">&#39;libfreetype6-dev&#39;</span><span class="p">,</span> <span class="s">&#39;libjpeg-dev&#39;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="create_python_env"><a class="viewcode-back" href="../../install.html#gab.install.create_python_env">[docs]</a><span class="k">def</span> <span class="nf">create_python_env</span><span class="p">(</span><span class="n">env_name</span><span class="o">=</span><span class="s">&#39;generic&#39;</span><span class="p">,</span> <span class="n">requirements_file</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Create a python virtualenv, based on the given requirements file.</span>
+<span class="sd">    If no requirements file is given, initialize it we some convenient packages</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">py_env</span> <span class="o">=</span> <span class="s">&#39;~/env/</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">env_name</span>
+    <span class="k">if</span> <span class="n">requirements_file</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">run</span><span class="p">(</span><span class="s">&#39;pip install -E </span><span class="si">%s</span><span class="s"> ipython suds pygments httplib2 &#39;</span> <span class="o">%</span> <span class="n">py_env</span><span class="p">)</span>
+        <span class="n">run</span><span class="p">(</span><span class="s">&#39;pip install -E </span><span class="si">%s</span><span class="s"> simplejson textile markdown&#39;</span> <span class="o">%</span> <span class="n">py_env</span><span class="p">)</span>
+        <span class="n">run</span><span class="p">(</span><span class="s">&#39;pip install -E </span><span class="si">%s</span><span class="s"> django bpython docutils&#39;</span> <span class="o">%</span> <span class="n">py_env</span><span class="p">)</span>
+        <span class="n">pil_url</span> <span class="o">=</span> <span class="s">&#39;http://effbot.org/downloads/Imaging-1.1.7.tar.gz&#39;</span>
+        <span class="n">run</span><span class="p">(</span><span class="s">&#39;pip install -E </span><span class="si">%s</span><span class="s"> Imaging==1.1.7 -f </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">py_env</span><span class="p">,</span> <span class="n">pil_url</span><span class="p">,))</span>
+        <span class="n">run</span><span class="p">(</span><span class="s">&#39;pip install -E </span><span class="si">%s</span><span class="s"> MySQL-python pep8 fabric&#39;</span> <span class="o">%</span> <span class="n">py_env</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">run</span><span class="p">(</span><span class="s">&#39;pip install -E </span><span class="si">%s</span><span class="s"> -r </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">py_env</span><span class="p">,</span> <span class="n">requirements_file</span><span class="p">))</span>
+
+</div>
+<div class="viewcode-block" id="install_ruby"><a class="viewcode-back" href="../../install.html#gab.install.install_ruby">[docs]</a><span class="k">def</span> <span class="nf">install_ruby</span><span class="p">():</span>
+    <span class="n">install</span><span class="p">(</span><span class="s">&#39;ruby1.8&#39;</span><span class="p">,</span> <span class="s">&#39;libbluecloth-ruby&#39;</span><span class="p">,</span> <span class="s">&#39;libopenssl-ruby1.8&#39;</span><span class="p">,</span>
+            <span class="s">&#39;ruby1.8-dev&#39;</span><span class="p">,</span> <span class="s">&#39;ri&#39;</span><span class="p">,</span> <span class="s">&#39;rdoc&#39;</span><span class="p">,</span> <span class="s">&#39;irb&#39;</span><span class="p">)</span>
+    <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;ln -s /usr/bin/ruby1.8 /usr/bin/ruby&#39;</span><span class="p">)</span>
+    <span class="c"># gem install</span>
+    <span class="n">run</span><span class="p">(</span><span class="s">&#39;mkdir -p src&#39;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">cd</span><span class="p">(</span><span class="s">&#39;src&#39;</span><span class="p">):</span>
+        <span class="n">run</span><span class="p">(</span><span class="s">&#39;wget http://production.cf.rubygems.org/rubygems/rubygems-1.3.7.tgz&#39;</span><span class="p">)</span>
+        <span class="n">run</span><span class="p">(</span><span class="s">&#39;tar xvzf rubygems-1.3.7.tgz&#39;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">cd</span><span class="p">(</span><span class="s">&#39;rubygems-1.3.7&#39;</span><span class="p">):</span>
+            <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;ruby setup.rb&#39;</span><span class="p">)</span>
+            <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;ln -s /usr/bin/gem1.8 /usr/bin/gem&#39;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="install_duplicity"><a class="viewcode-back" href="../../install.html#gab.install.install_duplicity">[docs]</a><span class="k">def</span> <span class="nf">install_duplicity</span><span class="p">(</span><span class="n">env_name</span><span class="o">=</span><span class="s">&#39;backup&#39;</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Install the duplicity backup tool (http://duplicity.nongnu.org/)&#39;&#39;&#39;</span>
+    <span class="n">py_env</span> <span class="o">=</span> <span class="s">&#39;~/env/</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">env_name</span>
+    <span class="n">install_python</span><span class="p">()</span>
+    <span class="n">install</span><span class="p">(</span><span class="s">&#39;librsync-dev&#39;</span><span class="p">)</span>
+    <span class="n">run</span><span class="p">(</span><span class="s">&#39;pip install -E </span><span class="si">%s</span><span class="s"> boto&#39;</span> <span class="o">%</span> <span class="n">py_env</span><span class="p">)</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="s">&#39;http://code.launchpad.net/duplicity/0.6-series/0.6.05/+download/duplicity-0.6.05.tar.gz&#39;</span>
+    <span class="n">run</span><span class="p">(</span><span class="s">&#39;pip install -E </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">py_env</span><span class="p">,</span> <span class="n">url</span><span class="p">))</span>
+
+</div>
+<div class="viewcode-block" id="install_nginx"><a class="viewcode-back" href="../../install.html#gab.install.install_nginx">[docs]</a><span class="k">def</span> <span class="nf">install_nginx</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">remove_default</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Install nginx as a webserver or reverse proxy</span>
+
+<span class="sd">    :param str version: the version of nginx you want to have installed if it&#39;s</span>
+<span class="sd">        a different version than the repository version. E.g. 1.0.4</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c"># install from the repository to get stable version and initial config</span>
+    <span class="n">install</span><span class="p">(</span><span class="s">&#39;nginx&#39;</span><span class="p">)</span>
+    <span class="n">default_site</span> <span class="o">=</span> <span class="s">&#39;/etc/nginx/sites-enabled/default&#39;</span>
+    <span class="k">if</span> <span class="n">remove_default</span> <span class="ow">and</span> <span class="n">exists</span><span class="p">(</span><span class="n">default_site</span><span class="p">):</span>
+        <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;rm </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">default_site</span><span class="p">)</span>
+        <span class="n">restart</span><span class="p">(</span><span class="s">&#39;nginx&#39;</span><span class="p">)</span>
+    <span class="c"># if a version is specified, install that and overwrite the repo version</span>
+    <span class="k">if</span> <span class="n">version</span><span class="p">:</span>
+        <span class="n">stop</span><span class="p">(</span><span class="s">&#39;nginx&#39;</span><span class="p">)</span>
+        <span class="n">run</span><span class="p">(</span><span class="s">&#39;mkdir -p src&#39;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">cd</span><span class="p">(</span><span class="s">&#39;src&#39;</span><span class="p">):</span>
+            <span class="n">run</span><span class="p">(</span><span class="s">&#39;wget http://nginx.org/download/nginx-</span><span class="si">%s</span><span class="s">.tar.gz&#39;</span> <span class="o">%</span> <span class="n">version</span><span class="p">)</span>
+            <span class="n">run</span><span class="p">(</span><span class="s">&#39;tar xf nginx-</span><span class="si">%s</span><span class="s">.tar.gz&#39;</span> <span class="o">%</span> <span class="n">version</span><span class="p">)</span>
+            <span class="c"># requirements for nginx</span>
+            <span class="n">install</span><span class="p">(</span><span class="s">&#39;build-essential&#39;</span><span class="p">,</span> <span class="s">&#39;libc6&#39;</span><span class="p">,</span> <span class="s">&#39;libpcre3&#39;</span><span class="p">,</span> <span class="s">&#39;libpcre3-dev&#39;</span><span class="p">,</span>
+                    <span class="s">&#39;libpcrecpp0&#39;</span><span class="p">,</span> <span class="s">&#39;libssl0.9.8&#39;</span><span class="p">,</span> <span class="s">&#39;libssl-dev&#39;</span><span class="p">,</span> <span class="s">&#39;zlib1g&#39;</span><span class="p">,</span>
+                    <span class="s">&#39;zlib1g-dev&#39;</span><span class="p">,</span> <span class="s">&#39;lsb-base&#39;</span><span class="p">)</span>
+            <span class="k">with</span> <span class="n">cd</span><span class="p">(</span><span class="s">&#39;nginx-</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">version</span><span class="p">):</span>
+                <span class="n">run</span><span class="p">(</span><span class="s">&#39;&#39;&#39;./configure --with-http_ssl_module </span><span class="se">\\</span><span class="s"></span>
+<span class="s">                       --with-sha1=/usr/lib </span><span class="se">\\</span><span class="s"></span>
+<span class="s">                       --with-http_gzip_static_module </span><span class="se">\\</span><span class="s"></span>
+<span class="s">                       --with-http_stub_status_module </span><span class="se">\\</span><span class="s"></span>
+<span class="s">                       --without-http_fastcgi_module </span><span class="se">\\</span><span class="s"></span>
+<span class="s">                       --sbin-path=/usr/sbin </span><span class="se">\\</span><span class="s"></span>
+<span class="s">                       --conf-path=/etc/nginx/nginx.conf </span><span class="se">\\</span><span class="s"></span>
+<span class="s">                       --prefix=/etc/nginx </span><span class="se">\\</span><span class="s"></span>
+<span class="s">                       --error-log-path=/var/log/nginx/error.log </span><span class="se">\\</span><span class="s"></span>
+<span class="s">                       &#39;&#39;&#39;</span><span class="p">)</span>
+                <span class="n">run</span><span class="p">(</span><span class="s">&#39;make&#39;</span><span class="p">)</span>
+                <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;make install&#39;</span><span class="p">)</span>
+        <span class="n">start</span><span class="p">(</span><span class="s">&#39;nginx&#39;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="install_apache2"><a class="viewcode-back" href="../../install.html#gab.install.install_apache2">[docs]</a><span class="k">def</span> <span class="nf">install_apache2</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s">&#39;python&#39;</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Install Apache2 as a application backend</span>
+
+<span class="sd">    :param str type: set a type to install some extra apache modules. E.g.</span>
+<span class="sd">        ``python``, ``php5``, ``ruby``</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">install</span><span class="p">(</span><span class="s">&#39;apache2&#39;</span><span class="p">,</span> <span class="s">&#39;libapache2-mod-rpaf&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">type</span> <span class="o">==</span> <span class="s">&#39;python&#39;</span><span class="p">:</span>
+        <span class="n">install</span><span class="p">(</span><span class="s">&#39;libapache2-mod-wsgi&#39;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="s">&#39;php5&#39;</span><span class="p">:</span>
+        <span class="n">install</span><span class="p">(</span><span class="s">&#39;libapache2-mod-php5&#39;</span><span class="p">,</span> <span class="s">&#39;php5&#39;</span><span class="p">,</span> <span class="s">&#39;php5-mysql&#39;</span><span class="p">,</span> <span class="s">&#39;php5-gd&#39;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="s">&#39;ruby&#39;</span><span class="p">:</span>
+        <span class="n">install_ruby</span><span class="p">()</span>
+        <span class="n">install</span><span class="p">(</span><span class="s">&#39;apache2-dev&#39;</span><span class="p">)</span>
+        <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;gem install passenger&#39;</span><span class="p">)</span>
+        <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;passenger-install-apache2-module&#39;</span><span class="p">)</span>
+        <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;a2enmod passenger&#39;</span><span class="p">)</span>
+    <span class="c"># enable some extra modules</span>
+    <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;a2enmod expires&#39;</span><span class="p">)</span>
+    <span class="c"># we want rid of the default apache config</span>
+    <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;a2dissite default&#39;</span><span class="p">)</span>
+    <span class="n">restart</span><span class="p">(</span><span class="s">&#39;apache2&#39;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="install_mysql"><a class="viewcode-back" href="../../install.html#gab.install.install_mysql">[docs]</a><span class="k">def</span> <span class="nf">install_mysql</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Install MySQL as database&#39;&#39;&#39;</span>
+    <span class="n">install_mysql_server</span><span class="p">()</span>
+    <span class="n">install_mysql_client</span><span class="p">()</span>
+
+</div>
+<div class="viewcode-block" id="install_mysql_server"><a class="viewcode-back" href="../../install.html#gab.install.install_mysql_server">[docs]</a><span class="k">def</span> <span class="nf">install_mysql_server</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Install MySQL server&#39;&#39;&#39;</span>
+    <span class="n">install</span><span class="p">(</span><span class="s">&#39;mysql-server-5.1&#39;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="install_mysql_client"><a class="viewcode-back" href="../../install.html#gab.install.install_mysql_client">[docs]</a><span class="k">def</span> <span class="nf">install_mysql_client</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Install MySQL client&#39;&#39;&#39;</span>
+    <span class="n">install</span><span class="p">(</span><span class="s">&#39;mysql-client-5.1&#39;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="install_apt_cacher"><a class="viewcode-back" href="../../install.html#gab.install.install_apt_cacher">[docs]</a><span class="k">def</span> <span class="nf">install_apt_cacher</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Install apt-cacher server&#39;&#39;&#39;</span>
+    <span class="n">install</span><span class="p">(</span><span class="s">&#39;apt-cacher-ng&#39;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="install_tmux"><a class="viewcode-back" href="../../install.html#gab.install.install_tmux">[docs]</a><span class="k">def</span> <span class="nf">install_tmux</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="s">&#39;1.5&#39;</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Get and install the latest tmux</span>
+
+<span class="sd">    :param str version: the tmux version to install. Default: 1.5</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">install</span><span class="p">(</span><span class="s">&#39;build-essential&#39;</span><span class="p">,</span> <span class="s">&#39;libevent-dev&#39;</span><span class="p">,</span> <span class="s">&#39;ncurses-dev&#39;</span><span class="p">)</span>
+    <span class="n">run</span><span class="p">(</span><span class="s">&#39;mkdir -p src&#39;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">cd</span><span class="p">(</span><span class="s">&#39;src&#39;</span><span class="p">):</span>
+        <span class="n">run</span><span class="p">(</span><span class="s">&#39;wget http://downloads.sourceforge.net/project/tmux/tmux/tmux-</span><span class="si">%(version)s</span><span class="s">/tmux-</span><span class="si">%(version)s</span><span class="s">.tar.gz?use_mirror=heanet -O tmux-</span><span class="si">%(version)s</span><span class="s">.tar.gz&#39;</span> <span class="o">%</span> <span class="p">{</span><span class="s">&#39;version&#39;</span><span class="p">:</span> <span class="n">version</span><span class="p">})</span>
+        <span class="n">run</span><span class="p">(</span><span class="s">&#39;tar xf tmux-</span><span class="si">%s</span><span class="s">.tar.gz&#39;</span> <span class="o">%</span> <span class="n">version</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">cd</span><span class="p">(</span><span class="s">&#39;tmux-</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">version</span><span class="p">):</span>
+            <span class="n">run</span><span class="p">(</span><span class="s">&#39;./configure&#39;</span><span class="p">)</span>
+            <span class="n">run</span><span class="p">(</span><span class="s">&#39;make&#39;</span><span class="p">)</span>
+    <span class="n">run</span><span class="p">(</span><span class="s">&#39;mkdir -p bin&#39;</span><span class="p">)</span>
+    <span class="n">run</span><span class="p">(</span><span class="s">&#39;mkdir -p share/man/man1/&#39;</span><span class="p">)</span>
+    <span class="n">run</span><span class="p">(</span><span class="s">&#39;cp ~/src/tmux-</span><span class="si">%s</span><span class="s">/tmux ~/bin/&#39;</span> <span class="o">%</span> <span class="n">version</span><span class="p">)</span>
+    <span class="n">run</span><span class="p">(</span><span class="s">&#39;cp ~/src/tmux-</span><span class="si">%s</span><span class="s">/tmux.1 ~/share/man/man1/&#39;</span> <span class="o">%</span> <span class="n">version</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="install_latex"><a class="viewcode-back" href="../../install.html#gab.install.install_latex">[docs]</a><span class="k">def</span> <span class="nf">install_latex</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Install LaTeX&#39;&#39;&#39;</span>
+    <span class="n">install</span><span class="p">(</span><span class="s">&#39;texlive&#39;</span><span class="p">,</span> <span class="s">&#39;texlive-font*&#39;</span><span class="p">,</span> <span class="s">&#39;texlive-latex*&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="s">&#39;editor&#39;</span><span class="p">,</span> <span class="s">&#39;vim&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s">&#39;vim&#39;</span><span class="p">:</span>
+        <span class="n">install</span><span class="p">(</span><span class="s">&#39;vim-latexsuite&#39;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="install_vlc"><a class="viewcode-back" href="../../install.html#gab.install.install_vlc">[docs]</a><span class="k">def</span> <span class="nf">install_vlc</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Install VLC media player&#39;&#39;&#39;</span>
+    <span class="n">install</span><span class="p">(</span><span class="s">&#39;vlc&#39;</span><span class="p">,</span> <span class="s">&#39;mozilla-plugin-vlc&#39;</span><span class="p">,</span> <span class="s">&#39;videolan-doc&#39;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="install_cdripper"><a class="viewcode-back" href="../../install.html#gab.install.install_cdripper">[docs]</a><span class="k">def</span> <span class="nf">install_cdripper</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Install RubyRipper to convert audio cd to MP3/OGG/Flac/...</span>
+
+<span class="sd">    Website: http://wiki.hydrogenaudio.org/index.php?title=Rubyripper</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">version</span> <span class="o">=</span> <span class="s">&#39;0.5.7&#39;</span>
+    <span class="n">install</span><span class="p">(</span><span class="s">&#39;build-essential&#39;</span><span class="p">,</span> <span class="s">&#39;cd-discid&#39;</span><span class="p">,</span> <span class="s">&#39;cdparanoia&#39;</span><span class="p">,</span> <span class="s">&#39;flac&#39;</span><span class="p">,</span> <span class="s">&#39;lame&#39;</span><span class="p">,</span>
+            <span class="s">&#39;mp3gain&#39;</span><span class="p">,</span> <span class="s">&#39;normalize-audio&#39;</span><span class="p">,</span> <span class="s">&#39;ruby-gnome2&#39;</span><span class="p">,</span> <span class="s">&#39;ruby&#39;</span><span class="p">,</span> <span class="s">&#39;vorbisgain&#39;</span><span class="p">)</span>
+    <span class="n">run</span><span class="p">(</span><span class="s">&#39;mkdir -p src&#39;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">cd</span><span class="p">(</span><span class="s">&#39;src&#39;</span><span class="p">):</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="s">&#39;http://rubyripper.googlecode.com/files/rubyripper-</span><span class="si">%s</span><span class="s">.tar.bz2&#39;</span> <span class="o">%</span> <span class="n">version</span>
+        <span class="n">run</span><span class="p">(</span><span class="s">&#39;wget </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">url</span><span class="p">)</span>
+        <span class="n">run</span><span class="p">(</span><span class="s">&#39;bzip2 -d rubyripper-</span><span class="si">%s</span><span class="s">.tar.bz2&#39;</span> <span class="o">%</span> <span class="n">version</span><span class="p">)</span>
+        <span class="n">run</span><span class="p">(</span><span class="s">&#39;tar xf rubyripper-</span><span class="si">%s</span><span class="s">.tar&#39;</span> <span class="o">%</span> <span class="n">version</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">cd</span><span class="p">(</span><span class="s">&#39;rubyripper-</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">version</span><span class="p">):</span>
+            <span class="c"># default options: gui + command line</span>
+            <span class="n">run</span><span class="p">(</span><span class="s">&#39;./configure --enable-lang-all --enable-gtk2 --enable-cli&#39;</span><span class="p">)</span>
+            <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;make install&#39;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="install_dvdripper"><a class="viewcode-back" href="../../install.html#gab.install.install_dvdripper">[docs]</a><span class="k">def</span> <span class="nf">install_dvdripper</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Install k9copy as DVD ripper&#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">exists</span><span class="p">(</span><span class="s">&#39;/etc/apt/sources.list.d/medibuntu.list&#39;</span><span class="p">):</span>
+        <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;wget http://www.medibuntu.org/sources.list.d/$(lsb_release -cs).list --output-document=/etc/apt/sources.list.d/medibuntu.list&#39;</span><span class="p">)</span>
+        <span class="n">apt_update</span><span class="p">()</span>
+        <span class="n">install</span><span class="p">(</span><span class="s">&#39;medibuntu-keyring&#39;</span><span class="p">,</span> <span class="n">allow_unauthenticated</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">apt_update</span><span class="p">()</span>
+    <span class="n">install</span><span class="p">(</span><span class="s">&#39;libdvdcss2&#39;</span><span class="p">)</span>
+    <span class="n">install</span><span class="p">(</span><span class="s">&#39;k9copy&#39;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="install_wine"><a class="viewcode-back" href="../../install.html#gab.install.install_wine">[docs]</a><span class="k">def</span> <span class="nf">install_wine</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Install wine&#39;&#39;&#39;</span>
+    <span class="n">install</span><span class="p">(</span><span class="s">&#39;wine&#39;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="install_moc"><a class="viewcode-back" href="../../install.html#gab.install.install_moc">[docs]</a><span class="k">def</span> <span class="nf">install_moc</span><span class="p">(</span><span class="n">add_lastfm</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Install the MOC music player (http://moc.daper.net/). It will also install</span>
+<span class="sd">    lastfmsubmitd (http://www.red-bean.com/decklin/lastfmsubmitd/) and set it</span>
+<span class="sd">    up to submit your plays</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">apps</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;moc&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">add_lastfm</span><span class="p">:</span>
+        <span class="n">apps</span> <span class="o">+=</span> <span class="p">[</span><span class="s">&#39;lastfmsubmitd&#39;</span><span class="p">]</span>
+    <span class="n">install</span><span class="p">(</span><span class="o">*</span><span class="n">apps</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">add_lastfm</span><span class="p">:</span>
+        <span class="n">username</span> <span class="o">=</span> <span class="n">prompt</span><span class="p">(</span><span class="s">&#39;Last.fm username?&#39;</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="n">_validate_not_empty</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s">&#39;username&#39;</span><span class="p">))</span>
+        <span class="n">password</span> <span class="o">=</span> <span class="n">prompt</span><span class="p">(</span><span class="s">&#39;Last.fm password?&#39;</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="n">_validate_not_empty</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s">&#39;password&#39;</span><span class="p">))</span>
+        <span class="c"># create lastfm config</span>
+        <span class="n">append</span><span class="p">(</span><span class="s">&#39;/etc/lastfmsubmitd.conf&#39;</span><span class="p">,</span>
+               <span class="s">&#39;[account]</span><span class="se">\n</span><span class="s">user = </span><span class="si">%s</span><span class="se">\n</span><span class="s">password = </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="p">),</span>
+               <span class="n">use_sudo</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="c"># add user to lastfm group so we can submit</span>
+        <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;adduser </span><span class="si">%s</span><span class="s"> lastfm&#39;</span> <span class="o">%</span> <span class="n">env</span><span class="o">.</span><span class="n">user</span><span class="p">)</span>
+        <span class="c"># setup moc to submit to lastfm on song change (use script from</span>
+        <span class="c"># http://lukeplant.me.uk/blog/posts/moc-and-last-fm/ to only submit</span>
+        <span class="c"># when we&#39;re half way through)</span>
+        <span class="n">run</span><span class="p">(</span><span class="s">&#39;mkdir -p ~/.moc&#39;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">cd</span><span class="p">(</span><span class="s">&#39;~/.moc&#39;</span><span class="p">):</span>
+            <span class="n">run</span><span class="p">(</span><span class="s">&#39;wget http://files.lukeplant.fastmail.fm/public/moc_submit_lastfm&#39;</span><span class="p">)</span>
+            <span class="n">run</span><span class="p">(</span><span class="s">&#39;chmod a+x moc_submit_lastfm&#39;</span><span class="p">)</span>
+            <span class="n">append</span><span class="p">(</span><span class="s">&#39;config&#39;</span><span class="p">,</span>
+                   <span class="s">&#39;OnSongChange = &quot;/home/</span><span class="si">%(user)s</span><span class="s">/.moc/moc_submit_lastfm --artist </span><span class="si">%%</span><span class="s">a --title </span><span class="si">%%</span><span class="s">t --length </span><span class="si">%%</span><span class="s">d --album </span><span class="si">%%</span><span class="s">r&quot;&#39;</span> <span class="o">%</span> <span class="n">env</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="install_systools"><a class="viewcode-back" href="../../install.html#gab.install.install_systools">[docs]</a><span class="k">def</span> <span class="nf">install_systools</span><span class="p">():</span>
+    <span class="s">&#39;Install extra system tools for convenience (htop, iostat, ...)&#39;</span>
+    <span class="n">install</span><span class="p">(</span><span class="s">&#39;htop&#39;</span><span class="p">,</span> <span class="s">&#39;iotop&#39;</span><span class="p">,</span> <span class="s">&#39;sysstat&#39;</span><span class="p">,</span> <span class="s">&#39;nethogs&#39;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="install_memcached"><a class="viewcode-back" href="../../install.html#gab.install.install_memcached">[docs]</a><span class="k">def</span> <span class="nf">install_memcached</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="s">&#39;1.4.9&#39;</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="s">&#39;Install memcached server&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">exists</span><span class="p">(</span><span class="s">&#39;/usr/bin/memcached&#39;</span><span class="p">):</span>
+        <span class="n">install</span><span class="p">(</span><span class="s">&#39;libevent-dev&#39;</span><span class="p">,</span> <span class="s">&#39;build-essential&#39;</span><span class="p">)</span>
+        <span class="n">run</span><span class="p">(</span><span class="s">&#39;mkdir -p src&#39;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">cd</span><span class="p">(</span><span class="s">&#39;src&#39;</span><span class="p">):</span>
+            <span class="n">run</span><span class="p">(</span><span class="s">&#39;wget http://memcached.googlecode.com/files/memcached-</span><span class="si">%s</span><span class="s">.tar.gz&#39;</span> <span class="o">%</span> <span class="n">version</span><span class="p">)</span>
+            <span class="n">run</span><span class="p">(</span><span class="s">&#39;tar xf memcached-</span><span class="si">%s</span><span class="s">.tar.gz&#39;</span> <span class="o">%</span> <span class="n">version</span><span class="p">)</span>
+            <span class="k">with</span> <span class="n">cd</span><span class="p">(</span><span class="s">&#39;memcached-</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">version</span><span class="p">):</span>
+                <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;--prefix=&#39;</span><span class="p">,</span> <span class="s">&#39;--exec-prefix=/usr&#39;</span><span class="p">,</span>
+                        <span class="s">&#39;--datarootdir=/usr&#39;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="s">&#39;is_64bit&#39;</span><span class="p">,</span> <span class="bp">False</span><span class="p">):</span>
+                    <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;--enable-64bit&#39;</span><span class="p">)</span>
+                <span class="n">run</span><span class="p">(</span><span class="s">&#39;./configure </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="s">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">args</span><span class="p">))</span>
+                <span class="n">run</span><span class="p">(</span><span class="s">&#39;make&#39;</span><span class="p">)</span>
+                <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;make install&#39;</span><span class="p">)</span>
+                <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;mkdir -p /usr/share/memcached&#39;</span><span class="p">)</span>
+                <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;cp -R scripts /usr/share/memcached&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">daemon</span><span class="p">:</span>
+        <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;cp /usr/share/memcached/scripts/memcached-init /etc/init.d/memcached&#39;</span><span class="p">)</span>
+        <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;update-rc.d memcached defaults&#39;</span><span class="p">)</span>
+        <span class="n">start</span><span class="p">(</span><span class="s">&#39;memcached&#39;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="install_memcached_client"><a class="viewcode-back" href="../../install.html#gab.install.install_memcached_client">[docs]</a><span class="k">def</span> <span class="nf">install_memcached_client</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="s">&#39;0.53&#39;</span><span class="p">):</span>
+    <span class="s">&#39;Install libmemcached as client library for memcached&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">exists</span><span class="p">(</span><span class="s">&#39;/usr/bin/memcached&#39;</span><span class="p">):</span>
+        <span class="n">install_memcached</span><span class="p">()</span>
+    <span class="n">install</span><span class="p">(</span><span class="s">&#39;libevent-dev&#39;</span><span class="p">,</span> <span class="s">&#39;build-essential&#39;</span><span class="p">)</span>
+    <span class="n">run</span><span class="p">(</span><span class="s">&#39;mkdir -p src&#39;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">cd</span><span class="p">(</span><span class="s">&#39;src&#39;</span><span class="p">):</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;version&#39;</span><span class="p">:</span> <span class="n">version</span><span class="p">}</span>
+        <span class="n">run</span><span class="p">(</span><span class="s">&#39;wget http://launchpad.net/libmemcached/1.0/</span><span class="si">%(version)s</span><span class="s">/+download/libmemcached-</span><span class="si">%(version)s</span><span class="s">.tar.gz&#39;</span> <span class="o">%</span> <span class="n">v</span><span class="p">)</span>
+        <span class="n">run</span><span class="p">(</span><span class="s">&#39;tar xf libmemcached-</span><span class="si">%(version)s</span><span class="s">.tar.gz&#39;</span> <span class="o">%</span> <span class="n">v</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">cd</span><span class="p">(</span><span class="s">&#39;libmemcached-</span><span class="si">%(version)s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">v</span><span class="p">):</span>
+            <span class="n">run</span><span class="p">(</span><span class="s">&#39;./configure&#39;</span><span class="p">)</span>
+            <span class="n">run</span><span class="p">(</span><span class="s">&#39;make&#39;</span><span class="p">)</span>
+            <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;make install&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">exists</span><span class="p">(</span><span class="s">&#39;/etc/ld.so.conf.d/local_lib&#39;</span><span class="p">):</span>
+        <span class="n">append</span><span class="p">(</span><span class="s">&#39;/etc/ld.so.conf.d/local_lib&#39;</span><span class="p">,</span> <span class="s">&#39;/usr/local/lib/&#39;</span><span class="p">,</span> <span class="n">use_sudo</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;ldconfig&#39;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="install_memcached_client_python"><a class="viewcode-back" href="../../install.html#gab.install.install_memcached_client_python">[docs]</a><span class="k">def</span> <span class="nf">install_memcached_client_python</span><span class="p">():</span>
+    <span class="s">&#39;Install pylibmc (and thus libmemcached) as client libraries for memcached&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">exists</span><span class="p">(</span><span class="s">&#39;/usr/local/lib/libmemcached.so&#39;</span><span class="p">):</span>
+        <span class="n">install_memcached_client</span><span class="p">(</span><span class="s">&#39;0.50&#39;</span><span class="p">)</span>
+    <span class="n">install</span><span class="p">(</span><span class="s">&#39;python&#39;</span><span class="p">,</span> <span class="s">&#39;python-setuptools&#39;</span><span class="p">,</span> <span class="s">&#39;python-dev&#39;</span><span class="p">,</span> <span class="s">&#39;build-essential&#39;</span><span class="p">,</span> <span class="s">&#39;zlib1g-dev&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="s">&#39;virtual_env&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">exists</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">virtual_env</span><span class="p">):</span>
+        <span class="n">run</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%(virtual_env)s</span><span class="s">/bin/pip install pylibmc&#39;</span> <span class="o">%</span> <span class="n">env</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;pip install pylibmc&#39;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="install_solr"><a class="viewcode-back" href="../../install.html#gab.install.install_solr">[docs]</a><span class="k">def</span> <span class="nf">install_solr</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Install SOLR: http://lucene.apache.org/solr/&#39;&#39;&#39;</span>
+    <span class="n">install</span><span class="p">(</span><span class="s">&#39;solr-jetty&#39;</span><span class="p">,</span> <span class="s">&#39;openjdk-6-jdk&#39;</span><span class="p">)</span>
+    <span class="n">sed</span><span class="p">(</span><span class="s">&#39;/etc/default/jetty&#39;</span><span class="p">,</span> <span class="s">&#39;NO_START=1&#39;</span><span class="p">,</span> <span class="s">&#39;NO_START=0&#39;</span><span class="p">,</span> <span class="n">use_sudo</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">append</span><span class="p">(</span><span class="s">&#39;/etc/default/jetty&#39;</span><span class="p">,</span> <span class="s">&#39;JETTY_HOST=0.0.0.0&#39;</span><span class="p">,</span> <span class="n">use_sudo</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="c"># move configuration files to current users dir</span>
+    <span class="n">run</span><span class="p">(</span><span class="s">&#39;mkdir -p etc/solr/conf&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;etc/solr/conf/schema.xml&#39;</span><span class="p">,</span> <span class="s">&#39;etc/solr/conf/solrconfig.xml&#39;</span><span class="p">):</span>
+        <span class="n">run</span><span class="p">(</span><span class="s">&#39;cp /</span><span class="si">%(f)s</span><span class="s"> ~/</span><span class="si">%(f)s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">{</span><span class="s">&#39;f&#39;</span><span class="p">:</span> <span class="n">f</span><span class="p">})</span>
+        <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;mv /</span><span class="si">%(f)s</span><span class="s"> /</span><span class="si">%(f)s</span><span class="s">~&#39;</span> <span class="o">%</span> <span class="p">{</span><span class="s">&#39;f&#39;</span><span class="p">:</span> <span class="n">f</span><span class="p">})</span>
+        <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;ln -s ~/</span><span class="si">%(f)s</span><span class="s"> /</span><span class="si">%(f)s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">{</span><span class="s">&#39;f&#39;</span><span class="p">:</span> <span class="n">f</span><span class="p">})</span>
+
+</div>
+<div class="viewcode-block" id="install_rabbitmq"><a class="viewcode-back" href="../../install.html#gab.install.install_rabbitmq">[docs]</a><span class="k">def</span> <span class="nf">install_rabbitmq</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">vhost</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Install the RabbitMQ server and add the web management plugin&#39;&#39;&#39;</span>
+    <span class="kn">from</span> <span class="nn">gab.operations</span> <span class="kn">import</span> <span class="n">create_rabbitmq_user</span><span class="p">,</span> <span class="n">create_rabbitmq_vhost</span>
+    <span class="n">l</span> <span class="o">=</span> <span class="s">&#39;/etc/apt/sources.list.d/rabbitmq.list&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">exists</span><span class="p">(</span><span class="n">l</span><span class="p">):</span>
+        <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;echo deb http://www.rabbitmq.com/debian/ testing main &gt; </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">l</span><span class="p">)</span>
+        <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;wget http://www.rabbitmq.com/rabbitmq-signing-key-public.asc -O - | apt-key add -&#39;</span><span class="p">)</span>
+        <span class="n">apt_update</span><span class="p">()</span>
+    <span class="n">install</span><span class="p">(</span><span class="s">&#39;rabbitmq-server&#39;</span><span class="p">,</span> <span class="s">&#39;erlang-inets&#39;</span><span class="p">)</span>
+    <span class="c"># create the user &amp; make it the admin</span>
+    <span class="n">create_rabbitmq_user</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">admin</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="c"># create the vhost</span>
+    <span class="n">create_rabbitmq_vhost</span><span class="p">(</span><span class="n">vhost</span><span class="p">,</span> <span class="n">user</span><span class="p">)</span>
+    <span class="c"># delete guest user for safety</span>
+    <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;rabbitmqctl delete_user guest&#39;</span><span class="p">)</span>
+    <span class="n">install_rabbitmq_plugins</span><span class="p">()</span>
+
+</div>
+<div class="viewcode-block" id="install_rabbitmq_plugins"><a class="viewcode-back" href="../../install.html#gab.install.install_rabbitmq_plugins">[docs]</a><span class="k">def</span> <span class="nf">install_rabbitmq_plugins</span><span class="p">():</span>
+    <span class="n">plugin_dir</span> <span class="o">=</span> <span class="s">&#39;/usr/lib/rabbitmq/lib/rabbitmq_server-2.6.1/plugins&#39;</span>
+    <span class="n">plugin_files</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s">&#39;http://www.rabbitmq.com/releases/plugins/v2.6.1/mochiweb-1.3-rmq2.6.1-git9a53dbd.ez&#39;</span><span class="p">,</span>
+        <span class="s">&#39;http://www.rabbitmq.com/releases/plugins/v2.6.1/webmachine-1.7.0-rmq2.6.1-hg0c4b60a.ez&#39;</span><span class="p">,</span>
+        <span class="s">&#39;http://www.rabbitmq.com/releases/plugins/v2.6.1/amqp_client-2.6.1.ez&#39;</span><span class="p">,</span>
+        <span class="s">&#39;http://www.rabbitmq.com/releases/plugins/v2.6.1/rabbitmq_mochiweb-2.6.1.ez&#39;</span><span class="p">,</span>
+        <span class="s">&#39;http://www.rabbitmq.com/releases/plugins/v2.6.1/rabbitmq_management-2.6.1.ez&#39;</span><span class="p">,</span>
+        <span class="s">&#39;http://www.rabbitmq.com/releases/plugins/v2.6.1/rabbitmq_management_agent-2.6.1.ez&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">for</span> <span class="nb">file</span> <span class="ow">in</span> <span class="n">plugin_files</span><span class="p">:</span>
+        <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;wget </span><span class="si">%s</span><span class="s"> -P </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">file</span><span class="p">,</span> <span class="n">plugin_dir</span><span class="p">,))</span>
+    <span class="c"># restart rabbitmq to load plugin</span>
+    <span class="n">restart</span><span class="p">(</span><span class="s">&#39;rabbitmq-server&#39;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="install_uwsgi"><a class="viewcode-back" href="../../install.html#gab.install.install_uwsgi">[docs]</a><span class="k">def</span> <span class="nf">install_uwsgi</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Install libraries required for uWSGI_ and install uWSGI_ in an test</span>
+<span class="sd">    virtualenv</span>
+
+<span class="sd">    .. _uWSGI: http://projects.unbit.it/uwsgi/</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">install</span><span class="p">(</span><span class="s">&#39;libxml2-dev&#39;</span><span class="p">)</span>
+    <span class="n">run</span><span class="p">(</span><span class="s">&#39;pip install -E ~/env/uwsgi_test uwsgi&#39;</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Gab - Gert&#39;s fabfile v1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Gert Van Gool.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.
+    </div>
+  </body>
+</html>

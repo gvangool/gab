@@ -1,0 +1,333 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gab.install &mdash; Gab - Gert&#39;s fabfile v1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     'v1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Gab - Gert&#39;s fabfile v1.0.0 documentation" href="index.html" />
+    <link rel="next" title="gab.maintenance" href="maintenance.html" />
+    <link rel="prev" title="gab - Gert’s fabfile’s documentation!" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="maintenance.html" title="gab.maintenance"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="gab - Gert’s fabfile’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Gab - Gert&#39;s fabfile v1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-gab.install">
+<span id="gab-install"></span><h1><tt class="docutils literal"><span class="pre">gab.install</span></tt><a class="headerlink" href="#module-gab.install" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="gab.install.install_dotfiles">
+<tt class="descclassname">gab.install.</tt><tt class="descname">install_dotfiles</tt><big>(</big><em>repo='http://github.com/gvangool/dotfiles.git'</em><big>)</big><a class="reference internal" href="_modules/gab/install.html#install_dotfiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gab.install.install_dotfiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Install the dotfiles from the given repository.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>repo</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; git repository containing the files, default
+<a class="reference external" href="http://github.com/gvangool/dotfiles/">http://github.com/gvangool/dotfiles/</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="gab.install.install_default_packages">
+<tt class="descclassname">gab.install.</tt><tt class="descname">install_default_packages</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/gab/install.html#install_default_packages"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gab.install.install_default_packages" title="Permalink to this definition">¶</a></dt>
+<dd><p>Install some default packages</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="gab.install.install_vcs">
+<tt class="descclassname">gab.install.</tt><tt class="descname">install_vcs</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/gab/install.html#install_vcs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gab.install.install_vcs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Install most used VCS (svn, git, hg)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="gab.install.install_python">
+<tt class="descclassname">gab.install.</tt><tt class="descname">install_python</tt><big>(</big><em>type=''</em><big>)</big><a class="reference internal" href="_modules/gab/install.html#install_python"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gab.install.install_python" title="Permalink to this definition">¶</a></dt>
+<dd><p>Install Python stuff</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>type</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; set type to <tt class="docutils literal"><span class="pre">dev</span></tt> to install extra libraries (to build
+MySQL-Python and PIL)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="gab.install.create_python_env">
+<tt class="descclassname">gab.install.</tt><tt class="descname">create_python_env</tt><big>(</big><em>env_name='generic'</em>, <em>requirements_file=None</em><big>)</big><a class="reference internal" href="_modules/gab/install.html#create_python_env"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gab.install.create_python_env" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a python virtualenv, based on the given requirements file.
+If no requirements file is given, initialize it we some convenient packages</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="gab.install.install_ruby">
+<tt class="descclassname">gab.install.</tt><tt class="descname">install_ruby</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/gab/install.html#install_ruby"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gab.install.install_ruby" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="gab.install.install_duplicity">
+<tt class="descclassname">gab.install.</tt><tt class="descname">install_duplicity</tt><big>(</big><em>env_name='backup'</em><big>)</big><a class="reference internal" href="_modules/gab/install.html#install_duplicity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gab.install.install_duplicity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Install the duplicity backup tool (<a class="reference external" href="http://duplicity.nongnu.org/">http://duplicity.nongnu.org/</a>)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="gab.install.install_nginx">
+<tt class="descclassname">gab.install.</tt><tt class="descname">install_nginx</tt><big>(</big><em>version=None</em>, <em>remove_default=True</em><big>)</big><a class="reference internal" href="_modules/gab/install.html#install_nginx"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gab.install.install_nginx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Install nginx as a webserver or reverse proxy</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>version</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; the version of nginx you want to have installed if it&#8217;s
+a different version than the repository version. E.g. 1.0.4</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="gab.install.install_apache2">
+<tt class="descclassname">gab.install.</tt><tt class="descname">install_apache2</tt><big>(</big><em>type='python'</em><big>)</big><a class="reference internal" href="_modules/gab/install.html#install_apache2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gab.install.install_apache2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Install Apache2 as a application backend</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>type</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; set a type to install some extra apache modules. E.g.
+<tt class="docutils literal"><span class="pre">python</span></tt>, <tt class="docutils literal"><span class="pre">php5</span></tt>, <tt class="docutils literal"><span class="pre">ruby</span></tt></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="gab.install.install_mysql">
+<tt class="descclassname">gab.install.</tt><tt class="descname">install_mysql</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/gab/install.html#install_mysql"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gab.install.install_mysql" title="Permalink to this definition">¶</a></dt>
+<dd><p>Install MySQL as database</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="gab.install.install_mysql_server">
+<tt class="descclassname">gab.install.</tt><tt class="descname">install_mysql_server</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/gab/install.html#install_mysql_server"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gab.install.install_mysql_server" title="Permalink to this definition">¶</a></dt>
+<dd><p>Install MySQL server</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="gab.install.install_mysql_client">
+<tt class="descclassname">gab.install.</tt><tt class="descname">install_mysql_client</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/gab/install.html#install_mysql_client"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gab.install.install_mysql_client" title="Permalink to this definition">¶</a></dt>
+<dd><p>Install MySQL client</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="gab.install.install_apt_cacher">
+<tt class="descclassname">gab.install.</tt><tt class="descname">install_apt_cacher</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/gab/install.html#install_apt_cacher"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gab.install.install_apt_cacher" title="Permalink to this definition">¶</a></dt>
+<dd><p>Install apt-cacher server</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="gab.install.install_tmux">
+<tt class="descclassname">gab.install.</tt><tt class="descname">install_tmux</tt><big>(</big><em>version='1.5'</em><big>)</big><a class="reference internal" href="_modules/gab/install.html#install_tmux"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gab.install.install_tmux" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get and install the latest tmux</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>version</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; the tmux version to install. Default: 1.5</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="gab.install.install_latex">
+<tt class="descclassname">gab.install.</tt><tt class="descname">install_latex</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/gab/install.html#install_latex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gab.install.install_latex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Install LaTeX</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="gab.install.install_vlc">
+<tt class="descclassname">gab.install.</tt><tt class="descname">install_vlc</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/gab/install.html#install_vlc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gab.install.install_vlc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Install VLC media player</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="gab.install.install_cdripper">
+<tt class="descclassname">gab.install.</tt><tt class="descname">install_cdripper</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/gab/install.html#install_cdripper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gab.install.install_cdripper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Install RubyRipper to convert audio cd to MP3/OGG/Flac/...</p>
+<p>Website: <a class="reference external" href="http://wiki.hydrogenaudio.org/index.php?title=Rubyripper">http://wiki.hydrogenaudio.org/index.php?title=Rubyripper</a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="gab.install.install_dvdripper">
+<tt class="descclassname">gab.install.</tt><tt class="descname">install_dvdripper</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/gab/install.html#install_dvdripper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gab.install.install_dvdripper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Install k9copy as DVD ripper</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="gab.install.install_wine">
+<tt class="descclassname">gab.install.</tt><tt class="descname">install_wine</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/gab/install.html#install_wine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gab.install.install_wine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Install wine</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="gab.install.install_moc">
+<tt class="descclassname">gab.install.</tt><tt class="descname">install_moc</tt><big>(</big><em>add_lastfm=True</em><big>)</big><a class="reference internal" href="_modules/gab/install.html#install_moc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gab.install.install_moc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Install the MOC music player (<a class="reference external" href="http://moc.daper.net/">http://moc.daper.net/</a>). It will also install
+lastfmsubmitd (<a class="reference external" href="http://www.red-bean.com/decklin/lastfmsubmitd/">http://www.red-bean.com/decklin/lastfmsubmitd/</a>) and set it
+up to submit your plays</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="gab.install.install_systools">
+<tt class="descclassname">gab.install.</tt><tt class="descname">install_systools</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/gab/install.html#install_systools"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gab.install.install_systools" title="Permalink to this definition">¶</a></dt>
+<dd><p>Install extra system tools for convenience (htop, iostat, ...)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="gab.install.install_memcached">
+<tt class="descclassname">gab.install.</tt><tt class="descname">install_memcached</tt><big>(</big><em>version='1.4.9'</em>, <em>daemon=False</em><big>)</big><a class="reference internal" href="_modules/gab/install.html#install_memcached"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gab.install.install_memcached" title="Permalink to this definition">¶</a></dt>
+<dd><p>Install memcached server</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="gab.install.install_memcached_client">
+<tt class="descclassname">gab.install.</tt><tt class="descname">install_memcached_client</tt><big>(</big><em>version='0.53'</em><big>)</big><a class="reference internal" href="_modules/gab/install.html#install_memcached_client"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gab.install.install_memcached_client" title="Permalink to this definition">¶</a></dt>
+<dd><p>Install libmemcached as client library for memcached</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="gab.install.install_memcached_client_python">
+<tt class="descclassname">gab.install.</tt><tt class="descname">install_memcached_client_python</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/gab/install.html#install_memcached_client_python"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gab.install.install_memcached_client_python" title="Permalink to this definition">¶</a></dt>
+<dd><p>Install pylibmc (and thus libmemcached) as client libraries for memcached</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="gab.install.install_solr">
+<tt class="descclassname">gab.install.</tt><tt class="descname">install_solr</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/gab/install.html#install_solr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gab.install.install_solr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Install SOLR: <a class="reference external" href="http://lucene.apache.org/solr/">http://lucene.apache.org/solr/</a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="gab.install.install_rabbitmq">
+<tt class="descclassname">gab.install.</tt><tt class="descname">install_rabbitmq</tt><big>(</big><em>user</em>, <em>password</em>, <em>vhost</em><big>)</big><a class="reference internal" href="_modules/gab/install.html#install_rabbitmq"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gab.install.install_rabbitmq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Install the RabbitMQ server and add the web management plugin</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="gab.install.install_rabbitmq_plugins">
+<tt class="descclassname">gab.install.</tt><tt class="descname">install_rabbitmq_plugins</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/gab/install.html#install_rabbitmq_plugins"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gab.install.install_rabbitmq_plugins" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="gab.install.install_uwsgi">
+<tt class="descclassname">gab.install.</tt><tt class="descname">install_uwsgi</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/gab/install.html#install_uwsgi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gab.install.install_uwsgi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Install libraries required for <a class="reference external" href="http://projects.unbit.it/uwsgi/">uWSGI</a> and install <a class="reference external" href="http://projects.unbit.it/uwsgi/">uWSGI</a> in an test
+virtualenv</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">gab - Gert&#8217;s fabfile&#8217;s documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="maintenance.html"
+                        title="next chapter"><tt class="docutils literal"><span class="pre">gab.maintenance</span></tt></a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/install.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="maintenance.html" title="gab.maintenance"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="gab - Gert’s fabfile’s documentation!"
+             >previous</a> |</li>
+        <li><a href="index.html">Gab - Gert&#39;s fabfile v1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Gert Van Gool.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.
+    </div>
+  </body>
+</html>

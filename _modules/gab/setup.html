@@ -1,0 +1,144 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gab.setup &mdash; Gab - Gert&#39;s fabfile v1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     'v1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Gab - Gert&#39;s fabfile v1.0.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Gab - Gert&#39;s fabfile v1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for gab.setup</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">gab.maintenance</span> <span class="kn">import</span> <span class="n">update</span><span class="p">,</span> <span class="n">install</span>
+<span class="kn">from</span> <span class="nn">gab.install</span> <span class="kn">import</span> <span class="p">(</span><span class="n">install_default_packages</span><span class="p">,</span> <span class="n">install_vcs</span><span class="p">,</span>
+                         <span class="n">install_systools</span><span class="p">,</span> <span class="n">install_python</span><span class="p">,</span> <span class="n">install_vlc</span><span class="p">,</span>
+                         <span class="n">install_mysql</span><span class="p">,</span> <span class="n">install_memcached</span><span class="p">,</span>
+                         <span class="n">install_memcached_client_python</span><span class="p">,</span> <span class="n">install_apache2</span><span class="p">,</span>
+                         <span class="n">install_mysql_client</span><span class="p">,</span> <span class="n">install_apt_cacher</span><span class="p">,</span>
+                         <span class="n">install_rabbitmq</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="setup_base"><a class="viewcode-back" href="../../setup.html#gab.setup.setup_base">[docs]</a><span class="k">def</span> <span class="nf">setup_base</span><span class="p">():</span>
+    <span class="n">update</span><span class="p">()</span>
+    <span class="n">install_default_packages</span><span class="p">()</span>
+    <span class="n">install_vcs</span><span class="p">()</span>
+    <span class="n">install_systools</span><span class="p">()</span>
+
+</div>
+<div class="viewcode-block" id="setup_desktop"><a class="viewcode-back" href="../../setup.html#gab.setup.setup_desktop">[docs]</a><span class="k">def</span> <span class="nf">setup_desktop</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">):</span>
+    <span class="n">setup_base</span><span class="p">()</span>
+    <span class="n">install_python</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
+    <span class="n">install_vlc</span><span class="p">()</span>
+    <span class="n">install</span><span class="p">(</span><span class="s">&#39;unrar&#39;</span><span class="p">,</span> <span class="s">&#39;nautilus-open-terminal&#39;</span><span class="p">,</span> <span class="s">&#39;p7zip-full&#39;</span><span class="p">,</span> <span class="s">&#39;smbfs&#39;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="setup_developer_desktop"><a class="viewcode-back" href="../../setup.html#gab.setup.setup_developer_desktop">[docs]</a><span class="k">def</span> <span class="nf">setup_developer_desktop</span><span class="p">():</span>
+    <span class="n">setup_desktop</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s">&#39;dev&#39;</span><span class="p">)</span>
+    <span class="n">install_mysql</span><span class="p">()</span>
+    <span class="n">install_memcached</span><span class="p">()</span>
+    <span class="n">install_memcached_client_python</span><span class="p">()</span>
+
+</div>
+<div class="viewcode-block" id="setup_webserver"><a class="viewcode-back" href="../../setup.html#gab.setup.setup_webserver">[docs]</a><span class="k">def</span> <span class="nf">setup_webserver</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s">&#39;python&#39;</span><span class="p">):</span>
+    <span class="n">setup_base</span><span class="p">()</span>
+    <span class="n">install_python</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s">&#39;dev&#39;</span><span class="p">)</span>
+    <span class="n">install_apache2</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
+    <span class="n">install_mysql_client</span><span class="p">()</span>
+
+</div>
+<div class="viewcode-block" id="setup_database"><a class="viewcode-back" href="../../setup.html#gab.setup.setup_database">[docs]</a><span class="k">def</span> <span class="nf">setup_database</span><span class="p">():</span>
+    <span class="n">setup_base</span><span class="p">()</span>
+    <span class="n">install_mysql</span><span class="p">()</span>
+
+</div>
+<div class="viewcode-block" id="setup_apt_cacher"><a class="viewcode-back" href="../../setup.html#gab.setup.setup_apt_cacher">[docs]</a><span class="k">def</span> <span class="nf">setup_apt_cacher</span><span class="p">():</span>
+    <span class="n">setup_base</span><span class="p">()</span>
+    <span class="n">install_apt_cacher</span><span class="p">()</span>
+
+</div>
+<div class="viewcode-block" id="setup_rabbitmq"><a class="viewcode-back" href="../../setup.html#gab.setup.setup_rabbitmq">[docs]</a><span class="k">def</span> <span class="nf">setup_rabbitmq</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">vhost</span><span class="p">):</span>
+    <span class="n">update</span><span class="p">()</span>
+    <span class="n">install_rabbitmq</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">vhost</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Gab - Gert&#39;s fabfile v1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Gert Van Gool.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.
+    </div>
+  </body>
+</html>

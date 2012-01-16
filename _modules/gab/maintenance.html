@@ -1,0 +1,161 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gab.maintenance &mdash; Gab - Gert&#39;s fabfile v1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     'v1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Gab - Gert&#39;s fabfile v1.0.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Gab - Gert&#39;s fabfile v1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for gab.maintenance</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">fabric.api</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">fabric.contrib.files</span> <span class="kn">import</span> <span class="n">exists</span>
+
+<span class="kn">from</span> <span class="nn">gab.validators</span> <span class="kn">import</span> <span class="n">yes_or_no</span> <span class="k">as</span> <span class="n">_yes_or_no</span>
+
+
+<span class="k">def</span> <span class="nf">_apt_get</span><span class="p">(</span><span class="n">cmd</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Wrapper for ``apt-get``. This will set the :envvar:`DEBIAN_FRONTEND` to</span>
+<span class="sd">    ``noninteractive``.</span>
+
+<span class="sd">    :param str cmd: the rest of the ``apt-get`` command</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;export DEBIAN_FRONTEND=noninteractive; apt-get </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">cmd</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="update"><a class="viewcode-back" href="../../maintenance.html#gab.maintenance.update">[docs]</a><span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="n">dselect</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Update everything. It will update &amp; upgrade all installed packages.</span>
+
+<span class="sd">    :param bool dselect: whether or not to trigger the</span>
+<span class="sd">        ``apt-get dselect-upgrade`` behaviour.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">apt_update</span><span class="p">()</span>
+    <span class="n">apt_upgrade</span><span class="p">(</span><span class="n">dselect</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="apt_update"><a class="viewcode-back" href="../../maintenance.html#gab.maintenance.apt_update">[docs]</a><span class="k">def</span> <span class="nf">apt_update</span><span class="p">():</span>
+    <span class="s">&#39;Update apt repositories&#39;</span>
+    <span class="n">_apt_get</span><span class="p">(</span><span class="s">&#39;update -q&#39;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="apt_upgrade"><a class="viewcode-back" href="../../maintenance.html#gab.maintenance.apt_upgrade">[docs]</a><span class="k">def</span> <span class="nf">apt_upgrade</span><span class="p">(</span><span class="n">dselect</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Upgrade installed packages</span>
+
+<span class="sd">    :param bool dselect: whether or not to trigger the</span>
+<span class="sd">        ``apt-get dselect-upgrade`` behaviour.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">_apt_get</span><span class="p">(</span><span class="s">&#39;upgrade -yq&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dselect</span><span class="p">:</span>
+        <span class="c"># download only</span>
+        <span class="n">_apt_get</span><span class="p">(</span><span class="s">&#39;dselect-upgrade -yqd&#39;</span><span class="p">)</span>
+        <span class="c"># ask user whether he wants to run it</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="s">&#39;silent&#39;</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span> <span class="ow">and</span> \
+           <span class="n">prompt</span><span class="p">(</span><span class="s">&#39;Do you want to run &quot;apt-get dist-upgrade&quot;? &#39;</span><span class="p">,</span>
+                  <span class="n">default</span><span class="o">=</span><span class="s">&#39;y&#39;</span><span class="p">,</span>
+                  <span class="n">validate</span><span class="o">=</span><span class="n">_yes_or_no</span><span class="p">):</span>
+            <span class="n">_apt_get</span><span class="p">(</span><span class="s">&#39;dselect-upgrade -yqq&#39;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="install"><a class="viewcode-back" href="../../maintenance.html#gab.maintenance.install">[docs]</a><span class="k">def</span> <span class="nf">install</span><span class="p">(</span><span class="o">*</span><span class="n">package_list</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Install packages</span>
+
+<span class="sd">    :param list package_list: a list of packages to install</span>
+<span class="sd">    :param dict options: pass extra options to ``apt-get``. Supported options:</span>
+<span class="sd">        ``allow_unauthenticated`` (``True`` or ``False``)</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">package_list</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="n">args</span> <span class="o">=</span> <span class="s">&#39;-yq&#39;</span>
+    <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;allow_unauthenticated&#39;</span><span class="p">,</span> <span class="bp">False</span><span class="p">):</span>
+        <span class="n">args</span> <span class="o">+=</span> <span class="s">&#39; --allow-unauthenticated&#39;</span>
+    <span class="n">package_list</span> <span class="o">=</span> <span class="s">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">package_list</span><span class="p">)</span>
+    <span class="n">_apt_get</span><span class="p">(</span><span class="s">&#39;install </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">package_list</span><span class="p">,))</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Gab - Gert&#39;s fabfile v1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Gert Van Gool.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.
+    </div>
+  </body>
+</html>
