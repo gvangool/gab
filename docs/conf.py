@@ -243,6 +243,9 @@ texinfo_documents = [
 # How to display URL addresses: 'footnote', 'no', or 'inline'.
 #texinfo_show_urls = 'footnote'
 
+# -- Option for autodoc
+autodoc_member_order = 'bysource'
+autodoc_default_flags = ['members', 'undoc-members']
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'http://docs.python.org/': None}
