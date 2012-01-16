@@ -8,8 +8,10 @@ from gab.validators import validate_not_empty as _validate_not_empty
 
 def install_dotfiles(repo='http://github.com/gvangool/dotfiles.git'):
     '''
-    Install the dotfiles from the given repository. If none is specified, use
-    http://github.com/gvangool/dotfiles/
+    Install the dotfiles from the given repository.
+
+    :param str repo: git repository containing the files, default
+        http://github.com/gvangool/dotfiles/
     '''
     install('git-core')
     run('mkdir -p src')
@@ -30,7 +32,12 @@ def install_vcs():
 
 
 def install_python(type=''):
-    '''Install Python stuff'''
+    '''
+    Install Python stuff
+
+    :param str type: set type to ``dev`` to install extra libraries (to build
+        MySQL-Python and PIL)
+    '''
     install('python', 'python-setuptools', 'python-dev', 'build-essential')
     sudo('easy_install pip')
     sudo('pip install -U pip virtualenv virtualenvwrapper')
@@ -87,7 +94,8 @@ def install_nginx(version=None, remove_default=True):
     '''
     Install nginx as a webserver or reverse proxy
 
-    :param version str: the version of nginx you want to have installed if it's a different version than the repository version. E.g. 1.0.4
+    :param str version: the version of nginx you want to have installed if it's
+        a different version than the repository version. E.g. 1.0.4
     '''
     # install from the repository to get stable version and initial config
     install('nginx')
@@ -123,7 +131,12 @@ def install_nginx(version=None, remove_default=True):
 
 
 def install_apache2(type='python'):
-    '''Install Apache2 as a application backend'''
+    '''
+    Install Apache2 as a application backend
+
+    :param str type: set a type to install some extra apache modules. E.g.
+        ``python``, ``php5``, ``ruby``
+    '''
     install('apache2', 'libapache2-mod-rpaf')
     if type == 'python':
         install('libapache2-mod-wsgi')
@@ -164,7 +177,11 @@ def install_apt_cacher():
 
 
 def install_tmux(version='1.5'):
-    '''Get and install the latest tmux (default: 1.5)'''
+    '''
+    Get and install the latest tmux
+
+    :param str version: the tmux version to install. Default: 1.5
+    '''
     install('build-essential', 'libevent-dev', 'ncurses-dev')
     run('mkdir -p src')
     with cd('src'):

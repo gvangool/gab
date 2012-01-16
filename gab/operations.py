@@ -13,7 +13,11 @@ def shell(cmd):
 
 
 def set_hostname(new_hostname):
-    'Set the hostname on the server'
+    '''
+    Set the hostname on the server
+
+    :param str new_hostname: the hostname for the server
+    '''
     sudo('echo %s > /etc/hostname' % new_hostname)
     sudo('echo 127.0.1.1\t%s >> /etc/hosts' % new_hostname)
     sudo('hostname -F /etc/hostname')
@@ -23,7 +27,8 @@ def set_apt_proxy(host):
     '''
     Set the APT proxy.
 
-    ``host`` should be something like http://localhost:3142
+    :param str host: the apt-cacher-ng server, should be something like
+        http://localhost:3142
     '''
     sudo('echo \'Acquire::http::Proxy "%s";\'  | tee /etc/apt/apt.conf.d/01proxy > /dev/null' %
          (host,)
@@ -34,10 +39,9 @@ def create_user(username, password='password', is_admin=True):
     '''
     Create a new user.
 
-    ``username``
-        the new user to create
-    ``password``
-        optionally the password for the user, default is ``password``
+    :param str username: the new user to create
+    :param str password: the password for the user, default is ``password`` (optional)
+    :param bool is_admin: should the user have ``sudo`` rights
     '''
     # create user
     sudo('useradd -U -m -s /bin/bash %s' % username)
@@ -51,7 +55,11 @@ def create_user(username, password='password', is_admin=True):
 
 
 def delete_user(username):
-    'Delete a user and its group'
+    '''
+    Delete a user and its group
+
+    :param str username: the user to delete
+    '''
     sudo('deluser --remove-home %s' % username)
     try:
         sudo('delgroup --only-if-empty %s' % username)
@@ -60,14 +68,20 @@ def delete_user(username):
 
 
 def install_crontab(remote, local=None):
-    '''Install the cron file'''
+    '''
+    Install the cron file
+
+    :param str remote: the server file containing the crontab information
+    :param str local: the local file containing that servers crontab
+        information. This file will be uploaded to ``remote``.
+    '''
     if local and os.path.exists(local):
         # check whether we need to create directories
         remote_path = os.path.dirname(remote)
         if remote_path:
             run('mkdir -p %s' % remote_path)
         put(local, remote)
-    if not exists(remote):
+    if not exists(remote.replace('~/', '')):
         return
 
     run('crontab %s' % (remote,))
@@ -131,14 +145,20 @@ def add_ssh_config(hostname, username, identity_file):
     Add a line to the ssh config file (found in ``~/.ssh/config``).
 
     E.g. the configuration for github::
+
+        add_ssh_config('github.com', 'git', '~/.ssh/my_gh_key)
+
+    will result in::
+
         Host github.com
             User git
             Hostname github.com
-            IdentityFile ~/.ssh/lulu_rsa
+            IdentityFile ~/.ssh/my_gh_key
 
 
     :param hostname str: the external host
-    :param username str: the username you need to use when you connect to that host, specify ``*`` if it's for all usernames
+    :param username str: the username you need to use when you connect to that
+        host, specify ``*`` if it's for all usernames
     :param identity_file str: the location to the private key file
     '''
     v = {'host': hostname, 'user': username, 'key': identity_file, }
