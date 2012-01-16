@@ -11,16 +11,12 @@ __all__ = ['install_serverdensity', 'sd_add_apache', 'sd_add_nginx_status',
 
 def install_serverdensity(url, key):
     '''
-    Install the `Server Density`__ software.
+    Install the `Server Density <http://serverdensity.com/>`_ software.
 
-    ``url``
-        is the chosen url at Server Density: https://example.serverdensity.com
-    ``key``
-        the key for the given server. You can find this in the server list at
-        Server Density.
-
-    .. _SD: http://serverdensity.com/
-    __ SD_
+    :param str url: is the chosen url at Server Density:
+        https://example.serverdensity.com
+    :param str key: the key for the given server. You can find this in the
+        server list at Server Density.
     '''
     l = '/etc/apt/sources.list.d/serverdensity.list'
     if not exists(l):
@@ -41,6 +37,8 @@ agent_key: %(key)s
 def _update_config(line):
     '''
     Update the ServerDensity agent and restart it.
+
+    :param str line: the extra data for sd-agent
     '''
     append('/etc/sd-agent/config.cfg', line, use_sudo=True)
     restart('sd-agent')
@@ -52,8 +50,7 @@ def sd_add_apache(status_url='http://127.0.0.1/server-status'):
     More information can be found at
     http://www.serverdensity.com/docs/agent/apachestatus/
 
-    ``url``
-        Pass the location of the server-status. Default is
+    :param str status_url: Pass the location of the server-status. Default is
         http://127.0.0.1/server-status
     '''
     _update_config('apache_status_url: %s?auto' % status_url)
@@ -65,15 +62,21 @@ def sd_add_nginx_status(status_url='http://127.0.0.1/nginx_status'):
     More information can be found at
     http://www.serverdensity.com/docs/agent/nginxstatus/
 
-    ``url``
-        Pass the location of the nginx status page. Default is
-        http://127.0.0.1/nginx_status
+    :param str status_url: Pass the location of the nginx status page. Default
+        is http://127.0.0.1/nginx_status
     '''
     _update_config('nginx_status_url: %s' % status_url)
 
 
 def sd_add_rabbitmq_config(http_api='http://127.0.0.1:55672/api/overview',
                            user='guest', passwd='guest'):
+    '''
+    Add RabbitMQ monitoring to the ServerDensity agent.
+
+    :param str http_api: location of the HTTP API
+    :param str user: username for RabbitMQ. Default ``guest``
+    :param str passwd: password for RabbitMQ. Default ``guest``
+    '''
     _update_config('''rabbitmq_status_url: %(http_api)s
 rabbitmq_user: %(user)s
 rabbitmq_pass: %(passwd)s''' % locals())
