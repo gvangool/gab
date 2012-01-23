@@ -182,7 +182,7 @@ def install_tmux(version='1.5'):
 
     :param str version: the tmux version to install. Default: 1.5
     '''
-    install('build-essential', 'libevent-dev', 'ncurses-dev')
+    install('build-essential', 'libevent-dev', 'ncurses-dev', 'ncurses-term')
     run('mkdir -p src')
     with cd('src'):
         run('wget http://downloads.sourceforge.net/project/tmux/tmux/tmux-%(version)s/tmux-%(version)s.tar.gz?use_mirror=heanet -O tmux-%(version)s.tar.gz' % {'version': version})
