@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 from setuptools import setup
 
+import gab
+
 setup(name='gab',
-      version='0.1',
+      version=gab.__version__,
       description='Gert\'s fabfiles',
       author='Gert Van Gool',
       author_email='gertvangool@gmail.com',
