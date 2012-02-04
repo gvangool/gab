@@ -1,10 +1,10 @@
 from gab.maintenance import update, install
 from gab.install import (install_default_packages, install_vcs,
                          install_systools, install_python, install_vlc,
-                         install_mysql, install_memcached,
+                         install_mysql, install_memcached, install_tmux,
                          install_memcached_client_python, install_apache2,
                          install_mysql_client, install_apt_cacher,
-                         install_rabbitmq)
+                         install_rabbitmq, install_dotfiles,)
 
 
 def setup_base():
@@ -12,6 +12,8 @@ def setup_base():
     install_default_packages()
     install_vcs()
     install_systools()
+    install_dotfiles()
+    install_tmux()
 
 
 def setup_desktop(type=''):
