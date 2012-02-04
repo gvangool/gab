@@ -26,8 +26,6 @@ def setup_desktop(type=''):
 def setup_developer_desktop():
     setup_desktop(type='dev')
     install_mysql()
-    install_memcached()
-    install_memcached_client_python()
 
 
 def setup_webserver(type='python'):
