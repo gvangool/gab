@@ -18,6 +18,7 @@ def install_dotfiles(repo='http://github.com/gvangool/dotfiles.git'):
     run('git clone -nq %s src/dotfiles' % repo)
     run('mv src/dotfiles/.git ~')
     run('git reset --hard')
+    run('git submodule update --init')
     run('rm -rfd src/dotfiles/')
 
 
