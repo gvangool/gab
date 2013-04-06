@@ -177,11 +177,11 @@ def install_apt_cacher():
     install('apt-cacher-ng')
 
 
-def install_tmux(version='1.5'):
+def install_tmux(version='1.8'):
     '''
     Get and install the latest tmux
 
-    :param str version: the tmux version to install. Default: 1.5
+    :param str version: the tmux version to install. Default: 1.8
     '''
     install('build-essential', 'libevent-dev', 'ncurses-dev', 'ncurses-term')
     run('mkdir -p src')
