@@ -393,3 +393,8 @@ def install_uwsgi():
     '''
     install('libxml2-dev')
     run('pip install -E ~/env/uwsgi_test uwsgi')
+
+
+def install_kvm():
+    '''Install KVM & virsh for virtualization'''
+    install('libvirt-bin', 'qemu-kvm')
