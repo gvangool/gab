@@ -19,7 +19,7 @@ def install_dotfiles(repo='http://github.com/gvangool/dotfiles.git'):
     run('mv src/dotfiles/.git ~')
     run('git reset --hard')
     run('git submodule update --init --recursive')
-    run('rm -rfd src/dotfiles/')
+    run('rm -rf src/dotfiles/')
 
 
 def install_default_packages():
