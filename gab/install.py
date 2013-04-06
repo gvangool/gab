@@ -24,7 +24,7 @@ def install_dotfiles(repo='http://github.com/gvangool/dotfiles.git'):
 
 def install_default_packages():
     '''Install some default packages'''
-    install('vim', 'screen', 'lynx', 'tofrodos', 'ncurses-term')
+    install('vim', 'screen', 'lynx', 'tofrodos', 'ncurses-term', 'zsh')
 
 
 def install_vcs():
