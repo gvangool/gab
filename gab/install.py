@@ -56,15 +56,17 @@ def create_python_env(env_name='generic', requirements_file=None):
     If no requirements file is given, initialize it we some convenient packages
     '''
     py_env = '~/env/%s' % env_name
+    if not exists(py_env):
+        run('virtualenv --no-site-packages --distribute %s' env_name)
     if requirements_file is None:
-        run('pip install -E %s ipython suds pygments httplib2 ' % py_env)
-        run('pip install -E %s simplejson textile markdown' % py_env)
-        run('pip install -E %s django bpython docutils' % py_env)
+        run('%s/bin/pip install ipython suds pygments httplib2 ' % py_env)
+        run('%s/bin/pip install simplejson textile markdown' % py_env)
+        run('%s/bin/pip install django bpython docutils' % py_env)
         pil_url = 'http://effbot.org/downloads/Imaging-1.1.7.tar.gz'
-        run('pip install -E %s Imaging==1.1.7 -f %s' % (py_env, pil_url,))
-        run('pip install -E %s MySQL-python pep8 fabric' % py_env)
+        run('%s/bin/pip install Imaging==1.1.7 -f %s' % (py_env, pil_url,))
+        run('%s/bin/pip install MySQL-python pep8 fabric' % py_env)
     else:
-        run('pip install -E %s -r %s' % (py_env, requirements_file))
+        run('%s/bin/pip install -r %s' % (py_env, requirements_file))
 
 
 def install_ruby():
