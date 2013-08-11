@@ -337,6 +337,18 @@ def install_memcached_client_python():
         sudo('pip install pylibmc')
 
 
+def install_redis(version):
+    'Install redis server'
+    run('mkdir -p src')
+    with cd('src'):
+        v = {'version': version}
+        run('wget http://redis.googlecode.com/files/redis-%(version)s.tar.gz' % v)
+        run('tar xzf redis-%(version)s.tar.gz' % v)
+        with cd('redis-%(version)s' % v):
+            run('make')
+            sudo('make install')
+
+
 def install_solr():
     '''Install SOLR: http://lucene.apache.org/solr/'''
     install('solr-jetty', 'openjdk-6-jdk')
